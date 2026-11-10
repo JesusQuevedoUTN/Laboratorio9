@@ -1,16 +1,136 @@
 package Controlador;
 
-import herramientas.Conexion;
+import Clases.Ejemplar;
+import Clases.Libro;
+import Clases.Prestamo;
+import Clases.Socio;
 import herramientas.Estado;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import herramientas.HibernateUtil;
 import java.time.LocalDate;
+import java.util.List;
+import org.hibernate.Session;
 
 public class ControladorPrestamo {
 
-    public void registrarPrestamo(int idSocio, String isbn, int nroEjemplar, LocalDate fechaPrestamo, LocalDate fechaLimite) {
+    public void registrarPrestamo(Prestamo nuevoPrestamo) {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            conexion.beginTransaction();
+
+            // 1. Buscar Socio usando session.get() en lugar de SELECT[cite: 2]
+            Socio socio = conexion.get(Socio.class, nuevoPrestamo.getIdSocio());
+            if (socio == null) {
+                System.out.println("Error: Socio no encontrado en la base de datos.");
+                return;
+            }
+
+            // 2. Buscar Libro
+            Libro libro = conexion.get(Libro.class, nuevoPrestamo.getIsbn());
+            if (libro == null) {
+                System.out.println("Error: ISBN no encontrado en la base de datos.");
+                return;
+            }
+
+            // 3. Buscar Ejemplar con HQL[cite: 2]
+            Ejemplar ejemplar = conexion.createQuery("FROM Ejemplar e WHERE e.isbn = :isbn AND e.nroEjemplar = :nro", Ejemplar.class)
+                    .setParameter("isbn", nuevoPrestamo.getIsbn())
+                    .setParameter("nro", nuevoPrestamo.getNroEjemplar())
+                    .uniqueResult(); // Trae un único objeto[cite: 4]
+
+            if (ejemplar == null) {
+                System.out.println("Error: Numero de ejemplar no encontrado.");
+                return;
+            }
+
+            if (!ejemplar.getEstado().equals(Estado.Disponible)) {
+                System.out.println("Error: El ejemplar no está disponible para préstamo.");
+                return;
+            }
+
+            // 4. Modificamos el objeto Ejemplar y Hibernate hace el UPDATE[cite: 3]
+            ejemplar.setEstado(Estado.Prestado);
+            conexion.merge(ejemplar);
+
+            // 5. Guardamos el Préstamo y Hibernate hace el INSERT[cite: 3, 4]
+            conexion.persist(nuevoPrestamo);
+
+            conexion.getTransaction().commit();
+            System.out.println("¡Prestamo registrado con éxito!");
+
+        } catch (Exception e) {
+            System.out.println("Error al registrar prestamo: " + e.getMessage());
+        }
+    }
+
+    public void registrarDevolucion(int idPrestamo, LocalDate fechaDev) {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            conexion.beginTransaction();
+
+            // Buscar el préstamo
+            Prestamo prestamo = conexion.get(Prestamo.class, idPrestamo);
+
+            if (prestamo == null) {
+                System.out.println("Error: ID de préstamo no encontrado.");
+                return;
+            }
+            if (prestamo.getFechaReal() != null) {
+                System.out.println("Aviso: Este prestamo ya fue devuelto previamente.");
+                return;
+            }
+
+            // Actualizamos la fecha de devolución
+            prestamo.setFechaReal(fechaDev);
+            conexion.merge(prestamo);
+
+            // Buscamos el ejemplar asociado y lo ponemos disponible
+            Ejemplar ejemplar = conexion.createQuery("FROM Ejemplar e WHERE e.isbn = :isbn AND e.nroEjemplar = :nro", Ejemplar.class)
+                    .setParameter("isbn", prestamo.getIsbn())
+                    .setParameter("nro", prestamo.getNroEjemplar())
+                    .uniqueResult();
+
+            if (ejemplar != null) {
+                ejemplar.setEstado(Estado.Disponible);
+                conexion.merge(ejemplar);
+            }
+
+            conexion.getTransaction().commit();
+            System.out.println("El ejemplar vuelve a estar disponible.");
+
+        } catch (Exception e) {
+            System.out.println("Error al modificar prestamo: " + e.getMessage());
+        }
+    }
+
+    public void listarPrestamos() {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            Socio socioActual = null;
+            Libro libroActual = null;
+
+            List<Prestamo> prestamos = conexion.createQuery("FROM Prestamo", Prestamo.class).list();
+
+            System.out.printf("%-8s %-25s %-35s %-15s%n", "ID", "SOCIO", "LIBRO", "FECHA");
+            System.out.println("-------------------------------------------------------------------------------------");
+
+            for (Prestamo p : prestamos) {
+                socioActual = conexion.get(Socio.class, p.getIdSocio());
+                libroActual = conexion.get(Libro.class, p.getIsbn());
+
+                String nombreSocio = (socioActual != null) ? socioActual.getNombreCompleto() : "Desconocido";
+                String tituloLibro = (libroActual != null) ? libroActual.getTitulo() : "Desconocido";
+
+                System.out.printf("%-8d %-25s %-35s %-15s%n",
+                        p.getIdPrestamo(), nombreSocio, tituloLibro, p.getFechaPrestamo());
+            }
+            System.out.println();
+
+        } catch (Exception e) {
+            System.out.println("Error al listar prestamos: " + e.getMessage());
+        }
+    }
+}
+
+
+/*
+    public void registrarPrestamo(Prestamo nuevoPrestamo) {
 
         boolean sePuedeSeguir = true;
 
@@ -64,7 +184,6 @@ public class ControladorPrestamo {
                         }
                     }
 
-                    
                     if (sePuedeSeguir) {
                         // Esta todo bien, registrar Préstamo
                         String sqlPrestamo = "INSERT INTO PRESTAMO (id_socio, ISBN, nro_ejemplar, fecha_prestamo, fecha_devolucion_prevista) VALUES (?, ?, ?, ?, ?)";
@@ -190,37 +309,4 @@ public class ControladorPrestamo {
         } catch (SQLException e) {
             System.out.println("Error de base de datos al modificar prestamo: " + e.getMessage());
         }
-    }
-
-    public void listarPrestamos() {
-
-        String sql
-                = "SELECT p.id_prestamo, s.nombre, l.titulo, p.fecha_prestamo "
-                + "FROM PRESTAMO p "
-                + "JOIN SOCIO s ON p.id_socio = s.id_socio "
-                + "JOIN LIBRO l ON p.ISBN = l.ISBN";
-
-        try (Connection con = Conexion.getConexion(); PreparedStatement instruccion = con.prepareStatement(sql); ResultSet consulta = instruccion.executeQuery()) {
-
-            System.out.printf(
-                    "%-8s %-25s %-35s %-15s%n",
-                    "ID", "SOCIO", "LIBRO", "FECHA");
-            System.out.println("-------------------------------------------------------------------------------------");
-
-            while (consulta.next()) {
-                int idP = consulta.getInt("id_prestamo");
-                String nom = consulta.getString("nombre");
-                String titu = consulta.getString("titulo");
-                LocalDate fechaP = consulta.getDate("fecha_prestamo").toLocalDate();
-
-                System.out.printf(
-                        "%-8d %-25s %-35s %-15s%n",
-                        idP, nom, titu, fechaP);
-            }
-            System.out.println();
-
-        } catch (SQLException e) {
-            System.out.println("Error al listar prestamos: " + e.getMessage());
-        }
-    }
-}
+    }*/

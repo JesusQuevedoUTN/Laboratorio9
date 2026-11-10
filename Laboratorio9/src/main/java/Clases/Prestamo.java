@@ -39,14 +39,21 @@ public class Prestamo {
     public Prestamo() {
     }
 
-    public Prestamo(Integer idPrestamo, Integer idSocio, String isbn, Integer nroEjemplar, LocalDate fechaPrestamo, LocalDate fechaPrevista, LocalDate fechaReal) {
-        this.idPrestamo = idPrestamo;
+    public Prestamo(Integer idSocio, String isbn, Integer nroEjemplar, LocalDate fechaPrestamo, LocalDate fechaPrevista, LocalDate fechaReal) {
         this.idSocio = idSocio;
         this.isbn = isbn;
         this.nroEjemplar = nroEjemplar;
         this.fechaPrestamo = fechaPrestamo;
         this.fechaPrevista = fechaPrevista;
         this.fechaReal = fechaReal;
+    }
+    
+    public Prestamo(Integer idSocio, String isbn, Integer nroEjemplar, LocalDate fechaPrestamo, LocalDate fechaPrevista) {
+        this.idSocio = idSocio;
+        this.isbn = isbn;
+        this.nroEjemplar = nroEjemplar;
+        this.fechaPrestamo = fechaPrestamo;
+        this.fechaPrevista = fechaPrevista;
     }
 
     public Integer getIdPrestamo() {
