@@ -1,86 +1,83 @@
 package Controlador;
 
-import herramientas.Conexion;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import Clases.Ejemplar;
+import herramientas.Estado;
+import herramientas.HibernateUtil;
+import java.util.List;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class ControladorEjemplar {
 
-    public void agregarEjemplar(String isbn, int nro, String estado) {
-        String sql
-                = "INSERT INTO EJEMPLAR (ISBN, nro_ejemplar, estado) \n"
-                + "VALUES (?, ?, ?)";
+     private final Session session;
 
-        try (Connection con = Conexion.getConexion(); PreparedStatement instruccion = con.prepareStatement(sql)) {
+    public ControladorEjemplar(Session session) {
+        this.session = session;
+    }
+    
+    public void cargarEjemplar(Ejemplar nuevoEjemplar){
+         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            conexion.beginTransaction();
 
-            instruccion.setString(1, isbn);
-            instruccion.setInt(2, nro);
-            instruccion.setString(3, estado);
+            // INSERT 
+            conexion.persist(nuevoEjemplar);
+            conexion.getTransaction().commit();
 
-            instruccion.executeUpdate();
             System.out.println("Ejemplar agregado correctamente");
 
-        } catch (SQLException e) {
-            System.out.println("Error al agregar ejemplar: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error al agregar el ejemplar: " + e.getMessage());
         }
     }
+    
+    public void listarEjemplares(){
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()){
+           List<Ejemplar> ejemplares = conexion.createQuery("FROM EJEMPLAR", Ejemplar.class).getResultList();
+           System.out.printf("%-5s %-25s %-15s%n", "ISBN", "Numero", "Estado");
+            System.out.println("---------------------------------------------------------");
 
-    public void listarEjemplares(String ISBN) {
-        String sql
-                = "SELECT * FROM EJEMPLAR \n"
-                + "WHERE ISBN = ? ";
-
-        try (Connection con = Conexion.getConexion(); PreparedStatement instruccion = con.prepareStatement(sql)) {
-            instruccion.setString(1, ISBN);
-
-            try (ResultSet consulta = instruccion.executeQuery()) {
+            for (Ejemplar consulta : ejemplares) {
+                String ISBN = consulta.getIsbn();
+                int nro = consulta.getNroEjemplar();
+                Estado estado = consulta.getEstado();
+                
                 System.out.printf(
-                        "%-15s %-20s%n",
-                        "N° EJEMPLAR", "ESTADO");
-                System.out.println("-----------------------------------");
-
-                while (consulta.next()) {
-                    int nro_ejemplar = consulta.getInt("nro_ejemplar");
-                    String estado = consulta.getString("estado");
-
-                    System.out.printf(
-                            "%-15d %-20s%n",
-                            nro_ejemplar, estado);
-                }
-                System.out.println();
+                        "%-5s %-25d %-15s\n",
+                        ISBN, nro, estado);
             }
+            System.out.println();
 
-        } catch (SQLException e) {
-            System.out.println("Error al listar los ejemplares: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error al listar libros: " + e.getMessage());
         }
     }
+    
+    public void modificarEstado(Ejemplar ejemplarModificado){
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            conexion.beginTransaction();
 
-    public void modificarEstado(String isbn, int nro, String estado) {
+            // SELECT ejemplar
+            Ejemplar modificar = conexion.find(Ejemplar.class, ejemplarModificado.getIsbn());
 
-        String sql
-                = "UPDATE EJEMPLAR SET estado = ?"
-                + "WHERE ISBN = ? AND nro_ejemplar = ?";
+            if (modificar != null) {
 
-        try (Connection con = Conexion.getConexion(); PreparedStatement instruccion = con.prepareStatement(sql)) {
+                // Modificamos el libro original
+                modificar.setIsbn(ejemplarModificado.getIsbn());
+                modificar.setNroEjemplar(ejemplarModificado.getNroEjemplar());
+                modificar.setEstado(ejemplarModificado.getEstado());
 
-            instruccion.setString(1, estado);
-            instruccion.setString(2, isbn);
-            instruccion.setInt(3, nro);
+                // UPDATE
+                conexion.merge(modificar);
+                conexion.getTransaction().commit();
 
-            int filas = instruccion.executeUpdate();
-
-            if (filas > 0) {
-                System.out.println("Estado actualizado");
+                System.out.println("Ejemplar modificado correctamente");
             } else {
-                System.out.println("No se pudo cambiar: el ejemplar no existe o no estaba ");
+                System.out.println("No existe un ejemplar con ese ISBN.");
             }
-
-        } catch (SQLException e) {
-            System.out.println("Error al modificar el estado: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error al modificar ejemplar: " + e.getMessage());
         }
-
     }
-
+    
+    
 }
