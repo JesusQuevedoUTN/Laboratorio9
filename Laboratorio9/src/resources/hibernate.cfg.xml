@@ -2,26 +2,28 @@
 <!DOCTYPE hibernate-configuration PUBLIC
  "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
  "http://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
 <hibernate-configuration>
-<session-factory>
-<!-- <property name=
-"connection.driver_class">com.mysql.cj.jdbc.Driver</property> -->
-<!-- <property name=
-"connection.url">jdbc:mysql://localhost:3306/database</property> -->
-<property name=
-"connection.driver_class">org.mariadb.jdbc.Driver</property>
-<property name=
-"connection.url">jdbc:mariadb://localhost/database</property>
-<property name="connection.username">user</property>
-<property name="connection.password">pass</property>
-<property name="connection.pool_size">3</property>
-<property name="current_session_context_class">thread</property>
-<property name="hibernate.show_sql">true</property>
-<property name="format_sql">true</property>
-<!-- <property name="hibernate.hbm2ddl.auto">create</property> -->
-<property name="hibernate.hbm2ddl.auto">update</property>
-<!-- mapping de las clases -->
-<mapping resource="Persona.hbm.xml" />
-<mapping class="Modelo.PersonaEntity" />
-</session-factory>
+    <session-factory>
+        
+        <property name= "connection.driver_class">          org.mariadb.jdbc.Driver</property>
+        <property name= "connection.url">                   jdbc:mariadb://localhost:3306/biblioteca_db?allowPublicKeyRetrieval=true</property>
+        <property name= "connection.username">              root</property>
+        <property name= "connection.password">              </property>
+        <property name= "connection.pool_size">             3</property>
+        <property name= "current_session_context_class">    thread</property>
+        <property name= "hibernate.show_sql">               true</property>
+        <property name= "format_sql">                       true</property>
+        
+        <!-- <property name="hibernate.hbm2ddl.auto">create</property> -->
+        <property name="hibernate.hbm2ddl.auto">            update</property>
+        
+        
+        <!-- CLASES -->
+        <mapping class="Modelo.Socio" />
+        <mapping class="Modelo.Libro" />
+        <mapping class="Modelo.Ejemplar" />
+        <mapping class="Modelo.Prestamo" />
+        
+    </session-factory>
 </hibernate-configuration>
