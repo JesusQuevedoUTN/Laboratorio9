@@ -26,6 +26,7 @@ public class Ejemplar {
     private Estado estado;
 
     public Ejemplar() {
+        this.estado = Estado.Disponible;
     }
 
     public Ejemplar(String isbn, Integer nroEjemplar, Estado estado) {
