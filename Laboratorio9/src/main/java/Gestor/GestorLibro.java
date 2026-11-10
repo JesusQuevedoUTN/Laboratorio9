@@ -7,12 +7,13 @@ import herramientas.Pausa;
 import java.util.Scanner;
 import herramientas.GestorMenu;
 import java.time.LocalDate;
+import org.hibernate.Session;
 
 public class GestorLibro implements GestorMenu {
 
-    private ControladorLibro gestor = new ControladorLibro();
+     
     private Scanner teclado = new Scanner(System.in);
-
+    
     @Override
     public void ejecutarMenu() {
         int menu = -1;
@@ -35,7 +36,7 @@ public class GestorLibro implements GestorMenu {
                     case 1 ->
                         pedirYAgregarLibro();
                     case 2 ->
-                        gestor.listarLibros();
+                        listarLibros();
                     case 3 ->
                         pedirYBuscarLibro();
                     case 4 ->
@@ -56,10 +57,72 @@ public class GestorLibro implements GestorMenu {
             }
         } while (menu != 0);
     }
+    
+    public void pedirYAgregarLibro(){
+        try ( Session session = HibernateUtil.getCurrentSession()){
+        ControladorLibro controlador = new ControladorLibro(session);
+        
+        System.out.println("Ingrese ISBN: ");
+        String isbn = teclado.nextLine();
+        
+        System.out.println("Ingrese titulo: ");
+        String titulo = teclado.nextLine();
 
-    private Libro crearLibro() {
-        Libro libroCreado = null;
+        System.out.println("Ingrese autor: ");
+        String autor = teclado.nextLine();
 
+        System.out.println("Ingrese editorial: ");
+        String editorial = teclado.nextLine();
+
+        if (titulo.isBlank() || autor.isBlank() || editorial.isBlank()) {
+            System.out.println("No se admiten datos varíos");
+        } else {
+           
+            System.out.println("Ingrese anio de publicacion: ");
+            int anio = Integer.parseInt(teclado.nextLine());
+
+            if (anio <= 0 || anio > LocalDate.now().getYear()) {
+                System.out.println("Error: Año de publicación inválido.");
+            } else {
+                
+               Libro libro = new Libro(isbn,titulo,autor,editorial,anio);
+               controlador.cargarLibro(libro);
+
+            }
+        }
+        session.close();
+    }
+    }
+    
+     public void pedirYBuscarLibro() {
+         try ( Session session = HibernateUtil.getCurrentSession()){
+        Libro libro;
+        ControladorLibro controlador = new ControladorLibro(session);
+        
+        System.out.println("Ingrese el ISBN a buscar: ");
+        String isbn = teclado.nextLine();
+        libro = controlador.buscarLibroPorISBN(isbn);
+        libro.toString();
+        session.close();
+        }
+    }
+     
+     public void listarLibros(){
+         try ( Session session = HibernateUtil.getCurrentSession()){
+             ControladorLibro controlador = new ControladorLibro(session);
+             
+             System.out.println("-- LIBROS --");
+             System.out.println(controlador.listarLibros());
+             
+             session.close();
+         }
+     }
+     
+    public void pedirYModificarLibro(){
+        
+        try ( Session session = HibernateUtil.getCurrentSession()){
+        ControladorLibro controlador = new ControladorLibro(session);
+        
         System.out.println("Ingrese ISBN: ");
         String isbn = teclado.nextLine();
 
@@ -82,65 +145,37 @@ public class GestorLibro implements GestorMenu {
             if (anio <= 0 || anio > LocalDate.now().getYear()) {
                 System.out.println("Error: Año de publicación inválido.");
             } else {
-                libroCreado = new Libro(isbn, titulo, autor, editorial, anio);
+                Libro libro = new Libro(isbn,titulo,autor,editorial,anio);
+                controlador.modificarLibro(libro);
             }
-
-        }
-        return libroCreado;
-    }
-
-    private void pedirYAgregarLibro() {
-        Libro libroNuevo = crearLibro();
-        if (libroNuevo != null) {
-            gestor.agregarLibro(libroNuevo);
+        }       
+            session.close();
         }
     }
-
-    private void pedirYBuscarLibro() {
-        System.out.println("Ingrese el ISBN a buscar: ");
-        String isbn = teclado.nextLine();
-        Libro mostrar = gestor.buscarLibro(isbn);
-
-        if (mostrar != null) {
-            System.out.println("\n--- Libro Encontrado ---"
-                    + "\nISBN: " + mostrar.getIsbn()
-                    + "\nTitulo: " + mostrar.getTitulo()
-                    + "\nAutor: " + mostrar.getAutor()
-                    + "\nEditorial: " + mostrar.getEditorial()
-                    + "\nAnio de publicacion: " + mostrar.getFechaPublicacion()
-                    + "\n--------------------------\n");
-        } else {
-            System.out.println("No se encontró un libro con ese ISBN.");
-        }
-    }
-
-    private void pedirYModificarLibro() {
-        Libro modificar = crearLibro();
-        gestor.modificarLibro(modificar);
-    }
-
-    private void pedirYEliminarLibro() {
+    
+    public void pedirYEliminarLibro(){
+        try ( Session session = HibernateUtil.getCurrentSession()){
+        ControladorLibro controlador = new ControladorLibro(session);
+        
         System.out.println("Ingrese el ISBN a eliminar: ");
         String isbn = teclado.nextLine();
-
-        Libro eliminar = null;
-        eliminar = gestor.buscarLibro(isbn);
-
-        if (eliminar != null) {
-            System.out.println("Estas seguro de que queres borrar: " + eliminar.getTitulo()
-                    + "\n[ 0: No | 1: Si ]: ");
-
-            int seleccion = Integer.parseInt(teclado.nextLine());
-            switch (seleccion) {
-                case 0 ->
-                    System.out.println("Libro " + eliminar.getTitulo() + " no eliminado.");
-                case 1 ->
-                    gestor.eliminarLibro(eliminar);
-                default ->
-                    System.out.println("Error: Estado inválido.");
-            }
+        int respuesta = 0;
+        
+        Libro libro = controlador.buscarLibroPorISBN(isbn);
+        
+        String titulo = libro.getTitulo();
+        
+        if(titulo != null){
+        System.out.println("Estas seguro de que queres borrar el libro: " + titulo + " ? [1 para SI || otro numero para NO]");
+        respuesta = Integer.parseInt(teclado.nextLine());
+        if (respuesta == 1) {
+            controlador.eliminarLibro(libro);
+            
+        }else{
+            System.out.println("No se borro: " + titulo);
+         }
         }
-
+        session.close();
+        }
     }
-
 }

@@ -1,102 +1,72 @@
 package Controlador;
 
 import Clases.Libro;
-import herramientas.HibernateUtil;
 import java.util.List;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 public class ControladorLibro {
+  
+    private final Session session;
 
-    public void agregarLibro(Libro nuevoLibro) {
-        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
-            conexion.beginTransaction();
-
-            // INSERT 
-            conexion.persist(nuevoLibro);
-            conexion.getTransaction().commit();
-
-            System.out.println("Libro agregado correctamente");
-
+    public ControladorLibro(Session session) {
+        this.session = session;
+    }
+    
+   public void cargarLibro(Libro libro){
+        Transaction trx = session.beginTransaction();
+        try {
+        session.persist(libro);
+        trx.commit();
         } catch (Exception e) {
-            System.out.println("Error al agregar el libro: " + e.getMessage());
+        trx.rollback();
+        System.out.println("Error al guardar el libro: " + e.getMessage());
         }
     }
+   
+   public List<Libro> listarLibros(){
+       Transaction trx = session.beginTransaction();
+     
+       List<Libro> libros = session.createQuery("FROM LIBRO", Libro.class).getResultList();
+       
+       trx.commit();
+       return libros;
+   }
+   
+   public Libro buscarLibroPorISBN(String isbn){
+       Transaction trx = session.beginTransaction();
 
-    public void listarLibros() {
-        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
-            List<Libro> libros = conexion.createQuery("FROM Libro", Libro.class).list();
+        Libro libroEncontrado = session.createQuery("FROM LIBRO where ISBN =: isbn", Libro.class).setParameter("isbn", isbn).getSingleResult();
 
-            System.out.printf("%-20s %-30s %-25s %-25s %-10s%n", "ISBN", "TÍTULO", "AUTOR", "EDITORIAL", "AÑO");
-            System.out.println("--------------------------------------------------------------------------------------------------------------------------------");
-
-            for (Libro consulta : libros) {
-                System.out.printf("%-20s %-30s %-25s %-25s %-10d%n",
-                        consulta.getIsbn(),
-                        consulta.getTitulo(),
-                        consulta.getAutor(),
-                        consulta.getEditorial(),
-                        consulta.getFechaPublicacion());
-            }
-            System.out.println();
-        } catch (Exception e) {
-            System.out.println("Error al listar libros: " + e.getMessage());
+        trx.commit();
+        return libroEncontrado;
+   }
+   
+   public void modificarLibro(Libro libro){
+       Transaction trx = session.beginTransaction();
+       
+       try{
+       session.merge(libro);
+       System.out.println("Libro modificado con exito");
+       
+       trx.commit();
+       }catch (Exception e) {
+        trx.rollback();
+        System.out.println("Error al modificar el libro: " + e.getMessage());
         }
-    }
-
-    public Libro buscarLibro(String isbn) {
-        Libro buscado = null;
-        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
-            buscado = conexion.find(Libro.class, isbn);
-        } catch (Exception e) {
-            System.out.println("Error al buscar libro: " + e.getMessage());
+   }
+   
+   public void eliminarLibro(Libro libro){
+       Transaction trx = session.beginTransaction();
+       
+       try{
+       session.remove(libro);
+       System.out.println("Libro eliminado con exito");
+       
+       trx.commit();
+       }catch (Exception e) {
+        trx.rollback();
+        System.out.println("Error al eliminar el libro: " + e.getMessage());
         }
-        return buscado;
-    }
-
-    public void modificarLibro(Libro libroModificado) {
-        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
-            conexion.beginTransaction();
-
-            // SELECT libro
-            Libro modificar = conexion.find(Libro.class, libroModificado.getIsbn());
-
-            if (modificar != null) {
-                
-                // Modificamos el libro original
-                modificar.setTitulo(libroModificado.getTitulo());
-                modificar.setAutor(libroModificado.getAutor());
-                modificar.setEditorial(libroModificado.getEditorial());
-                modificar.setFechaPublicacion(libroModificado.getFechaPublicacion());
-
-                // UPDATE
-                conexion.merge(modificar);
-                conexion.getTransaction().commit();
-                
-                System.out.println("Libro modificado correctamente");
-            } else {
-                System.out.println("No existe un libro con ese ISBN.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error al modificar libro: " + e.getMessage());
-        }
-    }
-
-    public void eliminarLibro(Libro eliminar) {
-        try (Session conexion = HibernateUtil.getSessionFactory().openSession()){
-            conexion.beginTransaction();
-
-            Libro libro = conexion.find(Libro.class, eliminar.getIsbn());
-            
-            if (libro != null) {
-                //DELETE
-                conexion.remove(libro); 
-                conexion.getTransaction().commit();
-                System.out.println("Libro eliminado correctamente");
-            } else {
-                System.out.println("No existe un libro con ese ISBN.");
-            }
-        } catch (Exception e) {
-            System.out.println("Error al eliminar libro: " + e.getMessage());
-        } 
-    }
+   }
 }
