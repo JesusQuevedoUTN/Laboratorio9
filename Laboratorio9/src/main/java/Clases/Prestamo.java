@@ -1,15 +1,39 @@
 package Clases;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 
+
+@Entity 
+@Table(name = "PRESTAMO")
 public class Prestamo {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_prestamo", length = 11, nullable = false)
     private Integer idPrestamo;
+    
+    @Column(name = "id_socio", length = 11, nullable = false)
     private Integer idSocio;
+    
+    @Column(name = "ISBN", length = 20, nullable = false)
     private String isbn;
+    
+    @Column(name = "nro_ejemplar", length = 11, nullable = false)
     private Integer nroEjemplar;
+    
+    @Column(name = "fecha_prestamo", nullable = false)
     private LocalDate fechaPrestamo;
+    
+    @Column(name = "fecha_devolucion_prevista", nullable = false)
     private LocalDate fechaPrevista;
+    
+    @Column(name = "fecha_devolucion_real", nullable = true)
     private LocalDate fechaReal;
 
     public Prestamo() {

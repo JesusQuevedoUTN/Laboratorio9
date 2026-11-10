@@ -1,17 +1,34 @@
 package Clases;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+
+@Entity
+@Table(name = "LIBRO")
 public class Libro {
 
+    @Id
+    @Column(name = "ISBN", length = 20, nullable = false)
     private String isbn;
+
+    @Column(name = "titulo", length = 150, nullable = false)
     private String titulo;
+
+    @Column(name = "autor", length = 100, nullable = false)
     private String autor;
+
+    @Column(name = "editorial", length = 100, nullable = true)
     private String editorial;
-    private String fechaPublicacion;
+
+    @Column(name = "fecha_publicacion", length = 11, nullable = true)
+    private Integer fechaPublicacion;
 
     public Libro() {
     }
 
-    public Libro(String isbn, String titulo, String autor, String editorial, String fechaPublicacion) {
+    public Libro(String isbn, String titulo, String autor, String editorial, Integer fechaPublicacion) {
         this.isbn = isbn;
         this.titulo = titulo;
         this.autor = autor;
@@ -51,11 +68,11 @@ public class Libro {
         this.editorial = editorial;
     }
 
-    public String getFechaPublicacion() {
+    public Integer getFechaPublicacion() {
         return fechaPublicacion;
     }
 
-    public void setFechaPublicacion(String fechaPublicacion) {
+    public void setFechaPublicacion(Integer fechaPublicacion) {
         this.fechaPublicacion = fechaPublicacion;
     }
 

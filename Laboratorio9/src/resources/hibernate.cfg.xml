@@ -20,10 +20,10 @@
         
         
         <!-- CLASES -->
-        <mapping class="Modelo.Socio" />
-        <mapping class="Modelo.Libro" />
-        <mapping class="Modelo.Ejemplar" />
-        <mapping class="Modelo.Prestamo" />
+        <mapping class="Clases.Socio" />
+        <mapping class="Clases.Libro" />
+        <mapping class="Clases.Ejemplar" />
+        <mapping class="Clases.Prestamo" />
         
     </session-factory>
 </hibernate-configuration>

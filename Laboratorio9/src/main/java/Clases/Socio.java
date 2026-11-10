@@ -1,13 +1,33 @@
 package Clases;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 
+@Entity 
+@Table(name = "SOCIO")
 public class Socio {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_socio", length = 11, nullable = false)
     private Integer idSocio;
+    
+    
+    @Column(name = "nombre", length = 100, nullable = false)
     private String nombreCompleto;
+    
+    @Column(name = "DNI", length = 50, nullable = false)
     private String dni;
+    
+    @Column(name = "telefono", length = 20, nullable = true)
     private String telefono;
+    
+    @Column(name = "fecha_alta", nullable = false)
     private LocalDate fechaAlta;
 
     public Socio() {
