@@ -56,7 +56,7 @@ public class GestorPrestamo implements GestorMenu {
     }
 
     private void pedirYRegistrarPrestamo() {
-        
+
         try {
             System.out.println("Ingrese el id del socio: ");
             int id = Integer.parseInt(teclado.nextLine());

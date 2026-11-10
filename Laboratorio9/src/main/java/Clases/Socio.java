@@ -33,8 +33,7 @@ public class Socio {
     public Socio() {
     }
 
-    public Socio(Integer idSocio, String nombreCompleto, String dni, String telefono, LocalDate fechaAlta) {
-        this.idSocio = idSocio;
+    public Socio(String nombreCompleto, String dni, String telefono, LocalDate fechaAlta) {
         this.nombreCompleto = nombreCompleto;
         this.dni = dni;
         this.telefono = telefono;

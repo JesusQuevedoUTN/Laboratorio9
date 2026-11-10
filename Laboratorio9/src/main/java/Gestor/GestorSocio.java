@@ -1,5 +1,6 @@
 package Gestor;
 
+import Clases.Socio;
 import Controlador.ControladorSocio;
 import herramientas.Mensaje;
 import herramientas.Pausa;
@@ -60,7 +61,8 @@ public class GestorSocio implements GestorMenu {
         } while (menu != 0);
     }
 
-    private void pedirYAgregarSocio() {
+    private Socio crearSocio() {
+        Socio socioCreado = null;
         try {
             System.out.print("Ingrese nombre: ");
             String nombre = teclado.nextLine();
@@ -77,38 +79,67 @@ public class GestorSocio implements GestorMenu {
                 System.out.print("Ingrese fecha de alta (dia-mes-año): ");
                 LocalDate fecha = LocalDate.parse(teclado.nextLine(), formato);
 
-                gestor.agregarSocio(nombre, dni, tel, fecha);
+                socioCreado = new Socio(nombre, dni, tel, fecha);
             }
 
         } catch (DateTimeParseException e) {
             System.out.println("Error: Fecha inválida. Utilice dd-MM-yyyy.");
+        }
+        return socioCreado;
+    }
+
+    private void pedirYAgregarSocio() {
+        Socio agregar = crearSocio();
+        if (agregar != null) {
+            gestor.agregarSocio(agregar);
         }
     }
 
     private void pedirYBuscarSocio() {
         System.out.print("Ingrese el DNI a buscar: ");
         String dni = teclado.nextLine();
-        gestor.buscarSocioPorDni(dni);
+
+        Socio mostrar = gestor.buscarSocio(dni);
+        //id nombre dni telefono fecha
+        if (mostrar != null) {
+            System.out.println(
+                    "\n--- Socio Encontrado ---"
+                    + "\nID: " + mostrar.getIdSocio()
+                    + "\nDNI: " + mostrar.getDni()
+                    + "\nTelefono: " + mostrar.getTelefono()
+                    + "\nFecha de Alta: " + mostrar.getFechaAlta()
+                    + "\n--------------------------\n");
+        } else {
+            System.out.println("No se encontró un socio con ese DNI.");
+        }
     }
 
     private void pedirYModificarSocio() {
         System.out.print("Ingrese el DNI del socio a modificar: ");
         String dniModificar = teclado.nextLine();
-        System.out.print("Ingrese el nuevo nombre: ");
-        String nuevoNombre = teclado.nextLine();
-        System.out.print("Ingrese el nuevo teléfono: ");
-        String nuevoTelefono = teclado.nextLine();
 
-        gestor.modificarSocio(dniModificar, nuevoNombre, nuevoTelefono);
+        Socio aModificar = gestor.buscarSocio(dniModificar);
+        if (aModificar != null) {
+            System.out.print("Ingrese el nuevo nombre: ");
+            String nuevoNombre = teclado.nextLine();
+            System.out.print("Ingrese el nuevo teléfono: ");
+            String nuevoTelefono = teclado.nextLine();
+            if (nuevoNombre.isBlank() || nuevoTelefono.isBlank()) {
+                System.out.println("Error: Los campos no pueden estar vacíos.");
+            } else {
+                gestor.modificarSocio(aModificar);
+            }
+        }
     }
 
     private void pedirYEliminarSocio() {
         System.out.print("Ingrese el ID del socio a eliminar: ");
-        try {
-            int dniEliminar = Integer.parseInt(teclado.nextLine());
-            gestor.eliminarSocio(dniEliminar);
-        } catch (NumberFormatException e) {
-            System.out.println("Error: El ID debe ser un número entero.");
+        
+        String dni = teclado.nextLine();
+        Socio eliminar = gestor.buscarSocio(dni);
+        
+        if (eliminar != null) {
+            gestor.eliminarSocio(eliminar);
         }
     }
 }

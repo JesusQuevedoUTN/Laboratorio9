@@ -29,13 +29,13 @@ public class ControladorLibro {
             System.out.printf("%-20s %-30s %-25s %-25s %-10s%n", "ISBN", "TÍTULO", "AUTOR", "EDITORIAL", "AÑO");
             System.out.println("--------------------------------------------------------------------------------------------------------------------------------");
 
-            for (Libro l : libros) {
+            for (Libro consulta : libros) {
                 System.out.printf("%-20s %-30s %-25s %-25s %-10d%n",
-                        l.getIsbn(),
-                        l.getTitulo(),
-                        l.getAutor(),
-                        l.getEditorial(),
-                        l.getFechaPublicacion());
+                        consulta.getIsbn(),
+                        consulta.getTitulo(),
+                        consulta.getAutor(),
+                        consulta.getEditorial(),
+                        consulta.getFechaPublicacion());
             }
             System.out.println();
         } catch (Exception e) {

@@ -53,15 +53,15 @@ public class GestorEjemplar implements GestorMenu {
     }
 
     private void pedirYAgregarEjemplar() {
-        
+
         System.out.println("Ingres ISBN: ");
         String isbn = teclado.nextLine();
-        
+
         System.out.println("Ingrese nro de ejemplar: ");
         int nro = Integer.parseInt(teclado.nextLine());
-        
+
         System.out.println("Que estado quiere darle al ejemplar [1:Disponible|2:Prestado]: ");
-        
+
         int estado = Integer.parseInt(teclado.nextLine());
         switch (estado) {
             case 1 ->
@@ -74,15 +74,15 @@ public class GestorEjemplar implements GestorMenu {
     }
 
     private void pedirYModificarEstado() {
-        
+
         System.out.println("Ingrese el ISBN del Ejemplar a Buscar:");
         String isbn = teclado.nextLine();
-        
+
         System.out.println("Ingrese nro de ejemplar: ");
-        
+
         int nro = Integer.parseInt(teclado.nextLine());
         System.out.println("Que estado quiere darle al ejemplar [1:Disponible|2:Prestado]: ");
-        
+
         int estado = Integer.parseInt(teclado.nextLine());
         switch (estado) {
             case 1 ->
@@ -101,7 +101,7 @@ public class GestorEjemplar implements GestorMenu {
         ISBN = teclado.nextLine();
         if (ISBN == null || ISBN.isEmpty()) {
             throw new IllegalArgumentException("El ISBN no puede estar vacío.");
-        }else {
+        } else {
             gestor.listarEjemplares(ISBN);
         }
 

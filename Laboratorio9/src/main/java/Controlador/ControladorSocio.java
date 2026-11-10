@@ -1,54 +1,41 @@
 package Controlador;
 
-import herramientas.Conexion;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDate;
+import Clases.Socio;
+import herramientas.HibernateUtil;
+import java.util.List;
+import org.hibernate.Session;
 
 public class ControladorSocio {
 
     // 4.1. Agregar socio
-    public void agregarSocio(String nombre, String dni, String telefono, LocalDate fechaAlta) {
-        String sql
-                = "INSERT INTO SOCIO (nombre, DNI, telefono, fecha_alta) \n"
-                + "VALUES (?, ?, ?, ?)";
+    public void agregarSocio(Socio nuevoSocio) {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            conexion.beginTransaction();
 
-        try (Connection con = Conexion.getConexion(); PreparedStatement instruccion = con.prepareStatement(sql)) {
+            // INSERT 
+            conexion.persist(nuevoSocio);
+            conexion.getTransaction().commit();
 
-            instruccion.setString(1, nombre);
-            instruccion.setString(2, dni);
-            instruccion.setString(3, telefono);
-            instruccion.setDate(4, java.sql.Date.valueOf(fechaAlta)); // Formato esperado por SQL: "YYYY-MM-DD"
-
-            instruccion.executeUpdate();
             System.out.println("Socio agregado correctamente");
 
-        } catch (SQLException e) {
-            System.out.println("Error al agregar socio (¿DNI duplicado?): " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error al agregar el libro: " + e.getMessage());
         }
     }
 
     // 4.2. Listar socios
     public void listarSocios() {
-        String sql
-                = "SELECT id_socio, nombre, DNI, telefono FROM SOCIO \n"
-                + "ORDER BY id_socio ASC";
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            List<Socio> socios = conexion.createQuery("FROM Socio", Socio.class).list();
 
-        try (Connection con = Conexion.getConexion(); PreparedStatement instruccion = con.prepareStatement(sql); ResultSet consulta = instruccion.executeQuery()) {
+            System.out.printf("%-5s %-25s %-15s %-15s%n", "ID", "NOMBRE", "DNI", "TELÉFONO");
+            System.out.println("---------------------------------------------------------");
 
-            System.out.printf(
-                    "%-5s %-25s %-15s %-15s%n",
-                    "ID", "NOMBRE", "DNI", "TELÉFONO");
-            System.out.println(
-                    "---------------------------------------------------------");
-
-            while (consulta.next()) {
-                int id = consulta.getInt("id_socio");
-                String nombre = consulta.getString("nombre");
-                String dni = consulta.getString("DNI");
-                String telefono = consulta.getString("telefono");
+            for (Socio consulta : socios) {
+                int id = consulta.getIdSocio();
+                String nombre = consulta.getNombreCompleto();
+                String dni = consulta.getDni();
+                String telefono = consulta.getTelefono();
 
                 System.out.printf(
                         "%-5d %-25s %-15s %-15s\n",
@@ -56,71 +43,75 @@ public class ControladorSocio {
             }
             System.out.println();
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println("Error al listar socios: " + e.getMessage());
         }
     }
 
     // 4.3. Buscar socio por DNI
-    public void buscarSocioPorDni(String dniBuscado) {
-        String sql
-                = "SELECT id_socio, nombre, DNI, telefono, fecha_alta FROM SOCIO \n"
-                + "WHERE DNI = ?";
+    public Socio buscarSocio(String dni) {
+        Socio buscado = null;
 
-        try (Connection con = Conexion.getConexion(); PreparedStatement instruccion = con.prepareStatement(sql)) {
-
-            instruccion.setString(1, dniBuscado);
-
-            try (ResultSet consulta = instruccion.executeQuery()) {
-                if (consulta.next()) {
-                    int id = consulta.getInt("id_socio");
-                    String nombre = consulta.getString("nombre");
-                    String dni = consulta.getString("DNI");
-                    String telefono = consulta.getString("telefono");
-                    String fechaAlta = consulta.getString("fecha_alta");
-
-                    System.out.println("\n--- ¡Socio Encontrado! ---");
-                    System.out.println("ID: " + id);
-                    System.out.println("Nombre: " + nombre);
-                    System.out.println("DNI: " + dni);
-                    System.out.println("Teléfono: " + telefono);
-                    System.out.println("Fecha de Alta: " + fechaAlta);
-                    System.out.println("--------------------------\n");
-                } else {
-                    System.out.println("No se encontró un socio con el DNI: " + dniBuscado);
-                }
-            }
-
-        } catch (SQLException e) {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            buscado = conexion.find(Socio.class, dni);
+        } catch (Exception e) {
             System.out.println("Error al buscar socio: " + e.getMessage());
         }
+
+        return buscado;
     }
 
     // 4.4. Modificar socio (Solo Nombre y Teléfono)
-    public void modificarSocio(String dni, String nuevoNombre, String nuevoTelefono) {
-        String sql
-                = "UPDATE SOCIO SET nombre = ?, telefono = ? \n"
-                + "WHERE DNI = ?";
+    public void modificarSocio(Socio socioModificado) {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            conexion.beginTransaction();
 
-        try (Connection con = Conexion.getConexion(); PreparedStatement instruccion = con.prepareStatement(sql)) {
+            // SELECT libro
+            Socio modificar = conexion.find(Socio.class, socioModificado.getDni());
 
-            instruccion.setString(1, nuevoNombre);
-            instruccion.setString(2, nuevoTelefono);
-            instruccion.setString(3, dni);
+            if (modificar != null) {
 
-            int filas = instruccion.executeUpdate();
-            if (filas > 0) {
-                System.out.println("¡Socio modificado correctamente!");
+                // Modificamos el libro original
+                //niModificar, nuevoNombre, nuevoTelefono);
+                modificar.setDni(socioModificado.getDni());
+                modificar.setNombreCompleto(socioModificado.getNombreCompleto());
+                modificar.setTelefono(socioModificado.getTelefono());
+
+                // UPDATE
+                conexion.merge(modificar);
+                conexion.getTransaction().commit();
+
+                System.out.println("Socio modificado correctamente");
             } else {
-                System.out.println("No se encontró un socio con el DNI: " + dni);
+                System.out.println("No existe un socio con ese DNI.");
             }
-        } catch (SQLException e) {
-            System.out.println("Error al modificar socio: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error al modificar libro: " + e.getMessage());
         }
     }
 
+    //FALTA VERIFICAR QUE NO TENGA PRESTAMOS
+    
     // 4.5. Eliminar socio (Validando préstamos)
-    public void eliminarSocio(int idSocio) {
+    public void eliminarSocio(Socio eliminar) {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            conexion.beginTransaction();
+
+            Socio socio = conexion.find(Socio.class, eliminar.getIdSocio());
+
+            if (socio != null) {
+                //DELETE
+                conexion.remove(socio);
+                conexion.getTransaction().commit();
+                System.out.println("Socio eliminado correctamente");
+            } else {
+                System.out.println("No existe un socio con ese ID.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al eliminar socio: " + e.getMessage());
+        }
+
+        /*
         // Validación obligatoria: verificar si tiene préstamos activos
         String sqlPrestamos
                 = "SELECT COUNT(*) AS total FROM PRESTAMO \n"
@@ -138,7 +129,7 @@ public class ControladorSocio {
             // Consultamos la tabla de prestamos completa
             try (PreparedStatement instruccionPrestamos = con.prepareStatement(sqlPrestamos)) {
                 instruccionPrestamos.setInt(1, idSocio);
-                
+
                 // Verificamos si tiene préstamos                
                 try (ResultSet consulta = instruccionPrestamos.executeQuery()) {
                     if (consulta.next() && consulta.getInt("total") > 0) {
@@ -163,6 +154,6 @@ public class ControladorSocio {
 
         } catch (SQLException e) {
             System.out.println("Error al eliminar socio: " + e.getMessage());
-        }
+        }*/
     }
 }

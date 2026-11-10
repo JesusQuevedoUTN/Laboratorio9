@@ -91,7 +91,9 @@ public class GestorLibro implements GestorMenu {
 
     private void pedirYAgregarLibro() {
         Libro libroNuevo = crearLibro();
-        gestor.agregarLibro(libroNuevo);
+        if (libroNuevo != null) {
+            gestor.agregarLibro(libroNuevo);
+        }
     }
 
     private void pedirYBuscarLibro() {
@@ -100,13 +102,13 @@ public class GestorLibro implements GestorMenu {
         Libro mostrar = gestor.buscarLibro(isbn);
 
         if (mostrar != null) {
-            System.out.println("\n--- Libro Encontrado ---");
-            System.out.println("ISBN: " + mostrar.getIsbn());
-            System.out.println("Titulo: " + mostrar.getTitulo());
-            System.out.println("Autor: " + mostrar.getAutor());
-            System.out.println("Editorial: " + mostrar.getEditorial());
-            System.out.println("Anio de publicacion: " + mostrar.getFechaPublicacion());
-            System.out.println("--------------------------\n");
+            System.out.println("\n--- Libro Encontrado ---"
+                    + "\nISBN: " + mostrar.getIsbn()
+                    + "\nTitulo: " + mostrar.getTitulo()
+                    + "\nAutor: " + mostrar.getAutor()
+                    + "\nEditorial: " + mostrar.getEditorial()
+                    + "\nAnio de publicacion: " + mostrar.getFechaPublicacion()
+                    + "\n--------------------------\n");
         } else {
             System.out.println("No se encontró un libro con ese ISBN.");
         }
@@ -120,7 +122,7 @@ public class GestorLibro implements GestorMenu {
     private void pedirYEliminarLibro() {
         System.out.println("Ingrese el ISBN a eliminar: ");
         String isbn = teclado.nextLine();
-        
+
         Libro eliminar = null;
         eliminar = gestor.buscarLibro(isbn);
 
@@ -128,15 +130,15 @@ public class GestorLibro implements GestorMenu {
             System.out.println("Estas seguro de que queres borrar: " + eliminar.getTitulo()
                     + "\n[ 0: No | 1: Si ]: ");
 
-        int seleccion = Integer.parseInt(teclado.nextLine());
-        switch (seleccion) {
-            case 0 ->
-                System.out.println("Libro " + eliminar.getTitulo() + " no eliminado.");
-            case 1 ->
-                gestor.eliminarLibro(eliminar);
-            default ->
-                System.out.println("Error: Estado inválido.");
-        }
+            int seleccion = Integer.parseInt(teclado.nextLine());
+            switch (seleccion) {
+                case 0 ->
+                    System.out.println("Libro " + eliminar.getTitulo() + " no eliminado.");
+                case 1 ->
+                    gestor.eliminarLibro(eliminar);
+                default ->
+                    System.out.println("Error: Estado inválido.");
+            }
         }
 
     }
