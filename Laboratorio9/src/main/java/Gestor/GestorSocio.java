@@ -14,7 +14,7 @@ public class GestorSocio implements GestorMenu {
 
     private ControladorSocio gestor = new ControladorSocio();
     private Scanner teclado = new Scanner(System.in);
-    private DateTimeFormatter formato = DateTimeFormatter.ofPattern("d-M-yyyy");
+    private DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-M-d");
 
     @Override
     public void ejecutarMenu() {
@@ -76,7 +76,7 @@ public class GestorSocio implements GestorMenu {
             if (nombre.isBlank() || dni.isBlank() || tel.isBlank()) {
                 System.out.println("Error: Los campos no pueden estar vacíos.");
             } else {
-                System.out.print("Ingrese fecha de alta (dia-mes-año): ");
+                System.out.print("Ingrese fecha de alta (año-mes-día): ");
                 LocalDate fecha = LocalDate.parse(teclado.nextLine(), formato);
 
                 socioCreado = new Socio(nombre, dni, tel, fecha);
@@ -126,6 +126,9 @@ public class GestorSocio implements GestorMenu {
             if (nuevoNombre.isBlank() || nuevoTelefono.isBlank()) {
                 System.out.println("Error: Los campos no pueden estar vacíos.");
             } else {
+                aModificar.setNombreCompleto(nuevoNombre);
+                aModificar.setTelefono(nuevoTelefono);
+                
                 gestor.modificarSocio(aModificar);
             }
         }else{
@@ -134,6 +137,9 @@ public class GestorSocio implements GestorMenu {
     }
 
     private void pedirYEliminarSocio() {
+        
+        //FALTA CONFIRMACION
+        
         System.out.print("Ingrese el ID del socio a eliminar: ");
         
         String dni = teclado.nextLine();

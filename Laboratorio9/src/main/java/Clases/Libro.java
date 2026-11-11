@@ -22,7 +22,7 @@ public class Libro {
     @Column(name = "editorial", length = 100, nullable = true)
     private String editorial;
 
-    @Column(name = "fecha_publicacion", length = 11, nullable = true)
+    @Column(name = "anio_publicacion", length = 11, nullable = true)
     private Integer fechaPublicacion;
 
     public Libro() {

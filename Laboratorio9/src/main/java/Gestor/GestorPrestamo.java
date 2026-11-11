@@ -14,7 +14,7 @@ public class GestorPrestamo implements GestorMenu {
 
     private ControladorPrestamo gestor = new ControladorPrestamo();
     private Scanner teclado = new Scanner(System.in);
-    private DateTimeFormatter formato = DateTimeFormatter.ofPattern("d-M-yyyy");
+    private DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-M-d");
 
     @Override
     public void ejecutarMenu() {
@@ -68,10 +68,10 @@ public class GestorPrestamo implements GestorMenu {
             System.out.println("Ingrese el numero del ejemplar: ");
             int nro = Integer.parseInt(teclado.nextLine());
 
-            System.out.println("Ingrese la fecha del prestamo (dia-mes-año): ");
+            System.out.println("Ingrese la fecha del prestamo (año-mes-día): ");
             LocalDate fechaPrestamo = LocalDate.parse(teclado.nextLine(), formato);
 
-            System.out.println("Ingrese la fecha limite del prestamo (dia-mes-año): ");
+            System.out.println("Ingrese la fecha limite del prestamo (año-mes-día): ");
             LocalDate fechaLimite = LocalDate.parse(teclado.nextLine(), formato);
 
             if (fechaLimite.isBefore(fechaPrestamo)) {
@@ -93,7 +93,7 @@ public class GestorPrestamo implements GestorMenu {
             System.out.println("Ingrese el ID del prestamo: ");
             int id = Integer.parseInt(teclado.nextLine());
 
-            System.out.println("Ingrese la fecha de devolucion (dia-mes-año): ");
+            System.out.println("Ingrese la fecha de devolucion (año-mes-día): ");
             LocalDate fechaDev = LocalDate.parse(teclado.nextLine(), formato);
 
             gestor.registrarDevolucion(id, fechaDev);

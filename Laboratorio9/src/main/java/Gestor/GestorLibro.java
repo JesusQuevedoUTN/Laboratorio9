@@ -122,6 +122,7 @@ public class GestorLibro implements GestorMenu {
         String isbnmodificar = teclado.nextLine();
 
         Libro aModificar = gestor.buscarLibroPorISBN(isbnmodificar);
+        
         if (aModificar != null) {
             System.out.print("Ingrese el nuevo titulo: ");
             String nuevoTitulo = teclado.nextLine();
@@ -132,11 +133,16 @@ public class GestorLibro implements GestorMenu {
             if (nuevoTitulo.isBlank() || nuevoAutor.isBlank() || nuevaEditorial.isBlank()) {
                 System.out.println("Error: Los campos no pueden estar vacíos.");
             } else {
-                System.out.println("Ingrese el nuevo anio de publicacion: ");
+                System.out.print("Ingrese el nuevo anio de publicacion: ");
                 int anioNuevo = Integer.parseInt(teclado.nextLine());
                 if (anioNuevo <= 0 || anioNuevo > LocalDate.now().getYear()) {
                 System.out.println("Error: Año de publicación inválido.");
+                
             } 
+                aModificar.setAutor(nuevoAutor);
+                aModificar.setTitulo(nuevoTitulo);
+                aModificar.setEditorial(nuevaEditorial);
+                
                 gestor.modificarLibro(aModificar);
             }
         }else{

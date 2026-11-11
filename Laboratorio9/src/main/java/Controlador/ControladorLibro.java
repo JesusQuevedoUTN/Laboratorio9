@@ -6,8 +6,8 @@ import java.util.List;
 import org.hibernate.Session;
 
 public class ControladorLibro {
-    
-   public void cargarLibro(Libro nuevoLibro){
+
+    public void cargarLibro(Libro nuevoLibro) {
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
             conexion.beginTransaction();
 
@@ -21,12 +21,12 @@ public class ControladorLibro {
             System.out.println("Error al agregar el libro: " + e.getMessage());
         }
     }
-   
-   public void listarLibros(){
-       try (Session conexion = HibernateUtil.getSessionFactory().openSession()){
-           List<Libro> libros = conexion.createQuery("FROM LIBRO", Libro.class).getResultList();
-           System.out.printf("%-5s %-25s %-15s %-15s -%15s%n", "ISBN", "Titulo", "Autor", "Editorial" , "Fecha Publicacion");
-            System.out.println("---------------------------------------------------------");
+
+    public void listarLibros() {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            List<Libro> libros = conexion.createQuery("FROM Libro", Libro.class).getResultList();
+            System.out.printf("%-15s %-40s %-30s %-20s %-15s%n", "ISBN", "Titulo", "Autor", "Editorial", "Fecha Publicacion");
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
 
             for (Libro consulta : libros) {
                 String ISBN = consulta.getIsbn();
@@ -34,10 +34,9 @@ public class ControladorLibro {
                 String autor = consulta.getAutor();
                 String editorial = consulta.getEditorial();
                 int fecha_publicacion = consulta.getFechaPublicacion();
-                
 
                 System.out.printf(
-                        "%-5s %-25s %-15s %-15s -%15d\n",
+                        "%-15s %-40s %-30s %-20s %-15d\n",
                         ISBN, titulo, autor, editorial, fecha_publicacion);
             }
             System.out.println();
@@ -45,10 +44,10 @@ public class ControladorLibro {
         } catch (Exception e) {
             System.out.println("Error al listar libros: " + e.getMessage());
         }
-       }
-   
-   public Libro buscarLibroPorISBN(String isbn){
-       Libro buscado = null;
+    }
+
+    public Libro buscarLibroPorISBN(String isbn) {
+        Libro buscado = null;
 
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
             buscado = conexion.find(Libro.class, isbn);
@@ -57,10 +56,10 @@ public class ControladorLibro {
         }
 
         return buscado;
-   }
-   
-   public void modificarLibro(Libro libroModificado){
-       try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+    }
+
+    public void modificarLibro(Libro libroModificado) {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
             conexion.beginTransaction();
 
             // SELECT libro
@@ -86,10 +85,10 @@ public class ControladorLibro {
         } catch (Exception e) {
             System.out.println("Error al modificar libro: " + e.getMessage());
         }
-   }
-   
-   public void eliminarLibro(Libro eliminar){
-       try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+    }
+
+    public void eliminarLibro(Libro eliminar) {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
             conexion.beginTransaction();
 
             Libro libro = conexion.find(Libro.class, eliminar.getIsbn());
@@ -106,8 +105,6 @@ public class ControladorLibro {
             System.out.println("Error al eliminar Libro: " + e.getMessage());
         }
 
-   }
+    }
 
 }
-
-
