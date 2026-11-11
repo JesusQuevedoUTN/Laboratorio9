@@ -1,5 +1,6 @@
 package Gestor;
 
+import Clases.Ejemplar;
 import Controlador.ControladorEjemplar;
 import herramientas.Estado;
 import herramientas.Mensaje;
@@ -52,7 +53,8 @@ public class GestorEjemplar implements GestorMenu {
         } while (menu != 0);
     }
 
-    private void pedirYAgregarEjemplar() {
+    private Ejemplar crearEjemplar() {
+        Ejemplar nuevo = null;
 
         System.out.println("Ingres ISBN: ");
         String isbn = teclado.nextLine();
@@ -60,17 +62,29 @@ public class GestorEjemplar implements GestorMenu {
         System.out.println("Ingrese nro de ejemplar: ");
         int nro = Integer.parseInt(teclado.nextLine());
 
-        System.out.println("Que estado quiere darle al ejemplar [1:Disponible|2:Prestado]: ");
+        System.out.println("Que estado quiere darle al ejemplar [1: Disponible| 2:Prestado]: ");
 
         int estado = Integer.parseInt(teclado.nextLine());
+
         switch (estado) {
             case 1 ->
-                gestor.agregarEjemplar(isbn, nro, Estado.Disponible.name());
+                nuevo = new Ejemplar(isbn, nro, Estado.Disponible);
+
             case 2 ->
-                gestor.agregarEjemplar(isbn, nro, Estado.Prestado.name());
+                nuevo = new Ejemplar(isbn, nro, Estado.Prestado);
             default ->
                 System.out.println("Error: Estado inválido.");
         }
+        return nuevo;
+    }
+
+    private void pedirYAgregarEjemplar() {
+        Ejemplar nuevoEjemplar = crearEjemplar();
+        if (nuevoEjemplar != null) {
+            gestor.agregarEjemplar(nuevoEjemplar);
+        }
+        
+        
     }
 
     private void pedirYModificarEstado() {
@@ -79,19 +93,22 @@ public class GestorEjemplar implements GestorMenu {
         String isbn = teclado.nextLine();
 
         System.out.println("Ingrese nro de ejemplar: ");
-
+/*
         int nro = Integer.parseInt(teclado.nextLine());
         System.out.println("Que estado quiere darle al ejemplar [1:Disponible|2:Prestado]: ");
 
         int estado = Integer.parseInt(teclado.nextLine());
         switch (estado) {
             case 1 ->
-                gestor.agregarEjemplar(isbn, nro, Estado.Disponible.name());
+            {
+                Ej
+                gestor.modificarEstado(ejemplarModificado);}
             case 2 ->
-                gestor.agregarEjemplar(isbn, nro, Estado.Prestado.name());
+            {
+                gestor.agregarEjemplar(ejemplarModificado);}
             default ->
                 System.out.println("Error: Estado inválido.");
-        }
+        }*/
     }
 
     private void pedirYListarEjemplares() {
@@ -102,7 +119,7 @@ public class GestorEjemplar implements GestorMenu {
         if (ISBN == null || ISBN.isEmpty()) {
             throw new IllegalArgumentException("El ISBN no puede estar vacío.");
         } else {
-            gestor.listarEjemplares(ISBN);
+            //gestor.listarEjemplares(ISBN);
         }
 
     }

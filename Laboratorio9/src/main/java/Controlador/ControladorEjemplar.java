@@ -5,14 +5,11 @@ import herramientas.Estado;
 import herramientas.HibernateUtil;
 import java.util.List;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 public class ControladorEjemplar {
 
-     private final Session session;
-
-    public ControladorEjemplar(Session session) {
-        this.session = session;
+    public void agregarEjemplar(Ejemplar nuevoEjemplar){
+        
     }
     
     public void cargarEjemplar(Ejemplar nuevoEjemplar){

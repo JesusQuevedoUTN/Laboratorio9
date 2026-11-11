@@ -100,7 +100,6 @@ public class GestorSocio implements GestorMenu {
         String dni = teclado.nextLine();
 
         Socio mostrar = gestor.buscarSocio(dni);
-        //id nombre dni telefono fecha
         if (mostrar != null) {
             System.out.println(
                     "\n--- Socio Encontrado ---"
@@ -129,6 +128,8 @@ public class GestorSocio implements GestorMenu {
             } else {
                 gestor.modificarSocio(aModificar);
             }
+        }else{
+            System.out.println("No existe el socio.");
         }
     }
 
@@ -140,6 +141,8 @@ public class GestorSocio implements GestorMenu {
         
         if (eliminar != null) {
             gestor.eliminarSocio(eliminar);
+        }else{
+            System.out.println("No existe el socio.");
         }
     }
 }

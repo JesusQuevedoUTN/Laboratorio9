@@ -77,8 +77,8 @@ public class GestorPrestamo implements GestorMenu {
             if (fechaLimite.isBefore(fechaPrestamo)) {
                 System.out.println("Error: La fecha límite no puede ser anterior a la fecha del préstamo.");
             } else {
-                Prestamo nuevoPrestamo = new Prestamo(id, isbn, nro, fechaPrestamo, fechaLimite);
-                gestor.registrarPrestamo(nuevoPrestamo);
+                //Prestamo nuevoPrestamo = new Prestamo(id, isbn, nro, fechaPrestamo, fechaLimite);
+                //gestor.registrarPrestamo(nuevoPrestamo);
             }
 
         } catch (NumberFormatException e) {

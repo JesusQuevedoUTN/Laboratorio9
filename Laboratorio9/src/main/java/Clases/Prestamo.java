@@ -39,8 +39,7 @@ public class Prestamo {
     public Prestamo() {
     }
 
-    public Prestamo(Integer idSocio, String isbn, Integer nroEjemplar, LocalDate fechaPrestamo, LocalDate fechaPrevista, LocalDate fechaReal) {
-        this.idSocio = idSocio;
+    public Prestamo(String isbn, Integer nroEjemplar, LocalDate fechaPrestamo, LocalDate fechaPrevista, LocalDate fechaReal) {
         this.isbn = isbn;
         this.nroEjemplar = nroEjemplar;
         this.fechaPrestamo = fechaPrestamo;
@@ -48,8 +47,7 @@ public class Prestamo {
         this.fechaReal = fechaReal;
     }
     
-    public Prestamo(Integer idSocio, String isbn, Integer nroEjemplar, LocalDate fechaPrestamo, LocalDate fechaPrevista) {
-        this.idSocio = idSocio;
+    public Prestamo(String isbn, Integer nroEjemplar, LocalDate fechaPrestamo, LocalDate fechaPrevista) {
         this.isbn = isbn;
         this.nroEjemplar = nroEjemplar;
         this.fechaPrestamo = fechaPrestamo;

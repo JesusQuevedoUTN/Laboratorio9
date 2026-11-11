@@ -7,7 +7,6 @@ import herramientas.Pausa;
 import java.util.Scanner;
 import herramientas.GestorMenu;
 import java.time.LocalDate;
-import org.hibernate.Session;
 
 public class GestorLibro implements GestorMenu {
 
@@ -140,6 +139,8 @@ public class GestorLibro implements GestorMenu {
             } 
                 gestor.modificarLibro(aModificar);
             }
+        }else{
+            System.out.println("No existe ese libro.");
         }
     }
     
@@ -151,6 +152,8 @@ public class GestorLibro implements GestorMenu {
         
         if (eliminar != null) {
             gestor.eliminarLibro(eliminar);
+        }else{
+            System.out.println("No existe el libro.");
         }
     }
     
