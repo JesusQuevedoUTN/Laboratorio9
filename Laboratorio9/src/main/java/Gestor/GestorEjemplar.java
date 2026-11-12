@@ -83,32 +83,39 @@ public class GestorEjemplar implements GestorMenu {
         if (nuevoEjemplar != null) {
             gestor.agregarEjemplar(nuevoEjemplar);
         }
-        
-        
+
     }
 
     private void pedirYModificarEstado() {
+        try {
+            System.out.println("Ingrese el ISBN del Ejemplar a Buscar:");
+            String isbn = teclado.nextLine();
 
-        System.out.println("Ingrese el ISBN del Ejemplar a Buscar:");
-        String isbn = teclado.nextLine();
+            System.out.println("Ingrese nro de ejemplar: ");
+            int nro = Integer.parseInt(teclado.nextLine());
 
-        System.out.println("Ingrese nro de ejemplar: ");
-/*
-        int nro = Integer.parseInt(teclado.nextLine());
-        System.out.println("Que estado quiere darle al ejemplar [1:Disponible|2:Prestado]: ");
+            System.out.println("Que estado quiere darle al ejemplar [1:Disponible|2:Prestado]: ");
+            int estado = Integer.parseInt(teclado.nextLine());
 
-        int estado = Integer.parseInt(teclado.nextLine());
-        switch (estado) {
-            case 1 ->
-            {
-                Ej
-                gestor.modificarEstado(ejemplarModificado);}
-            case 2 ->
-            {
-                gestor.agregarEjemplar(ejemplarModificado);}
-            default ->
-                System.out.println("Error: Estado inválido.");
-        }*/
+            Ejemplar ejemplarModificado = null;
+
+            switch (estado) {
+                case 1 ->
+                    ejemplarModificado = new Ejemplar(isbn, nro, Estado.Disponible);
+                case 2 ->
+                    ejemplarModificado = new Ejemplar(isbn, nro, Estado.Prestado);
+                default -> {
+                    Mensaje.OPCION_INVALIDA.mostrar();
+                    
+                }
+            }
+            if (ejemplarModificado != null) {
+                gestor.modificarEstado(ejemplarModificado);
+            }
+
+        } catch (NumberFormatException e) {
+            Mensaje.TIPO_DATO_INCORRECTO.mostrar();
+        }
     }
 
     private void pedirYListarEjemplares() {
@@ -117,9 +124,9 @@ public class GestorEjemplar implements GestorMenu {
         System.out.println("Ingrese el ISBN del libro buscado: ");
         ISBN = teclado.nextLine();
         if (ISBN == null || ISBN.isEmpty()) {
-            throw new IllegalArgumentException("El ISBN no puede estar vacío.");
+            Mensaje.CAMPOS_VACIOS.mostrar();
         } else {
-            //gestor.listarEjemplares(ISBN);
+            gestor.listarEjemplares(ISBN);
         }
 
     }

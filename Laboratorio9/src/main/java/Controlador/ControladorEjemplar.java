@@ -8,12 +8,8 @@ import org.hibernate.Session;
 
 public class ControladorEjemplar {
 
-    public void agregarEjemplar(Ejemplar nuevoEjemplar){
-        
-    }
-    
-    public void cargarEjemplar(Ejemplar nuevoEjemplar){
-         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+    public void agregarEjemplar(Ejemplar nuevoEjemplar) {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
             conexion.beginTransaction();
 
             // INSERT 
@@ -26,55 +22,65 @@ public class ControladorEjemplar {
             System.out.println("Error al agregar el ejemplar: " + e.getMessage());
         }
     }
-    
-    public void listarEjemplares(){
-        try (Session conexion = HibernateUtil.getSessionFactory().openSession()){
-           List<Ejemplar> ejemplares = conexion.createQuery("FROM EJEMPLAR", Ejemplar.class).getResultList();
-           System.out.printf("%-5s %-25s %-15s%n", "ISBN", "Numero", "Estado");
+
+    public void cargarEjemplar(Ejemplar nuevoEjemplar) {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            conexion.beginTransaction();
+
+            // INSERT 
+            conexion.persist(nuevoEjemplar);
+            conexion.getTransaction().commit();
+
+            System.out.println("Ejemplar agregado correctamente");
+
+        } catch (Exception e) {
+            System.out.println("Error al agregar el ejemplar: " + e.getMessage());
+        }
+    }
+
+    public void listarEjemplares(String isbnBuscado) {
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            List<Ejemplar> ejemplares = conexion.createQuery("FROM Ejemplar e WHERE e.isbn = :isbn", Ejemplar.class)
+                    .setParameter("isbn", isbnBuscado)
+                    .getResultList();
+
+            System.out.printf("%-15s %-15s %-15s%n", "ISBN", "Numero", "Estado");
             System.out.println("---------------------------------------------------------");
 
             for (Ejemplar consulta : ejemplares) {
-                String ISBN = consulta.getIsbn();
-                int nro = consulta.getNroEjemplar();
-                Estado estado = consulta.getEstado();
-                
                 System.out.printf(
-                        "%-5s %-25d %-15s\n",
-                        ISBN, nro, estado);
+                        "%-15s %-15d %-15s\n",
+                        consulta.getIsbn(), consulta.getNroEjemplar(), consulta.getEstado().name());
             }
             System.out.println();
 
         } catch (Exception e) {
-            System.out.println("Error al listar libros: " + e.getMessage());
+            System.out.println("Error al listar ejemplares: " + e.getMessage());
         }
     }
-    
-    public void modificarEstado(Ejemplar ejemplarModificado){
+
+    public void modificarEstado(Ejemplar ejemplarModificado) {
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
             conexion.beginTransaction();
 
-            // SELECT ejemplar
-            Ejemplar modificar = conexion.find(Ejemplar.class, ejemplarModificado.getIsbn());
+            // Buscar ejemplar
+            Ejemplar modificar = conexion.createQuery("FROM Ejemplar e WHERE e.isbn = :isbn AND e.nroEjemplar = :nro", Ejemplar.class)
+                    .setParameter("isbn", ejemplarModificado.getIsbn())
+                    .setParameter("nro", ejemplarModificado.getNroEjemplar())
+                    .uniqueResult();
 
             if (modificar != null) {
-
-                // Modificamos el libro original
-                modificar.setIsbn(ejemplarModificado.getIsbn());
-                modificar.setNroEjemplar(ejemplarModificado.getNroEjemplar());
-                modificar.setEstado(ejemplarModificado.getEstado());
-
                 // UPDATE
+                modificar.setEstado(ejemplarModificado.getEstado());
                 conexion.merge(modificar);
                 conexion.getTransaction().commit();
 
                 System.out.println("Ejemplar modificado correctamente");
             } else {
-                System.out.println("No existe un ejemplar con ese ISBN.");
+                System.out.println("No existe un ejemplar con ese ISBN y Número.");
             }
         } catch (Exception e) {
             System.out.println("Error al modificar ejemplar: " + e.getMessage());
         }
     }
-    
-    
 }
