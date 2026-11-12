@@ -3,12 +3,12 @@ package Gestor;
 import Clases.Prestamo;
 import Controlador.ControladorPrestamo;
 import herramientas.Mensaje;
-import herramientas.Pausa;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 import herramientas.GestorMenu;
+import herramientas.Pausa;
 
 public class GestorPrestamo implements GestorMenu {
 
@@ -41,17 +41,17 @@ public class GestorPrestamo implements GestorMenu {
                     case 3 ->
                         gestor.listarPrestamos();
                     case 0 ->
-                        System.out.println("<--\n\n");
+                        Mensaje.SALIR.mostrar();
                     default ->
-                        Mensaje.opcionInvalida();
+                        Mensaje.OPCION_INVALIDA.mostrar();
                 }
 
             } catch (NumberFormatException e) {
-                Mensaje.tipoDatoIncorrecto();
+                Mensaje.TIPO_DATO_INCORRECTO.mostrar();
             }
 
             if (menu != 0) {
-                Pausa.pausar();
+                Pausa.pausar(teclado);
             }
         } while (menu != 0);
     }
@@ -82,9 +82,9 @@ public class GestorPrestamo implements GestorMenu {
             }
 
         } catch (NumberFormatException e) {
-            System.out.println("Error: debe ingresar un numero entero.");
+            Mensaje.TIPO_DATO_INCORRECTO.mostrar();
         } catch (DateTimeParseException e) {
-            System.out.println("Error: fecha invalida.");
+            Mensaje.FECHA_INVALIDA.mostrar();
         }
     }
 
@@ -99,9 +99,9 @@ public class GestorPrestamo implements GestorMenu {
             gestor.registrarDevolucion(id, fechaDev);
 
         } catch (NumberFormatException e) {
-            System.out.println("Error: el ID debe ser un numero entero.");
+            Mensaje.TIPO_DATO_INCORRECTO.mostrar();
         } catch (DateTimeParseException e) {
-            System.out.println("Error: fecha invalida.");
+            Mensaje.FECHA_INVALIDA.mostrar();
         }
     }
 }

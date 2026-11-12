@@ -56,7 +56,7 @@ public class SelectorMenu {
                         seleccion = null;
                         System.out.println("\n\nAdios\n\n");}
                     default ->
-                        Mensaje.opcionInvalida();
+                        Mensaje.OPCION_INVALIDA.mostrar();
                 }
 
                 if (seleccion != null) {
@@ -64,7 +64,7 @@ public class SelectorMenu {
                 }
 
             } catch (NumberFormatException e) {
-                Mensaje.tipoDatoIncorrecto();
+                Mensaje.TIPO_DATO_INCORRECTO.mostrar();
             }
         } while (menu != 0);
     }

@@ -3,12 +3,12 @@ package Gestor;
 import Clases.Socio;
 import Controlador.ControladorSocio;
 import herramientas.Mensaje;
-import herramientas.Pausa;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 import herramientas.GestorMenu;
+import herramientas.Pausa;
 
 public class GestorSocio implements GestorMenu {
 
@@ -46,17 +46,17 @@ public class GestorSocio implements GestorMenu {
                     case 5 ->
                         pedirYEliminarSocio();
                     case 0 ->
-                        System.out.println("<--\n\n");
+                        Mensaje.SALIR.mostrar();
                     default ->
-                        Mensaje.opcionInvalida();
+                        Mensaje.OPCION_INVALIDA.mostrar();
                 }
 
             } catch (NumberFormatException e) {
-                Mensaje.tipoDatoIncorrecto();
+                Mensaje.TIPO_DATO_INCORRECTO.mostrar();
             }
 
             if (menu != 0) {
-                Pausa.pausar();
+                Pausa.pausar(teclado);
             }
         } while (menu != 0);
     }
@@ -74,7 +74,7 @@ public class GestorSocio implements GestorMenu {
             String tel = teclado.nextLine();
 
             if (nombre.isBlank() || dni.isBlank() || tel.isBlank()) {
-                System.out.println("Error: Los campos no pueden estar vacíos.");
+                Mensaje.CAMPOS_VACIOS.mostrar();
             } else {
                 System.out.print("Ingrese fecha de alta (año-mes-día): ");
                 LocalDate fecha = LocalDate.parse(teclado.nextLine(), formato);
@@ -83,7 +83,7 @@ public class GestorSocio implements GestorMenu {
             }
 
         } catch (DateTimeParseException e) {
-            System.out.println("Error: Fecha inválida. Utilice dd-MM-yyyy.");
+            Mensaje.FECHA_INVALIDA.mostrar();
         }
         return socioCreado;
     }
@@ -109,7 +109,7 @@ public class GestorSocio implements GestorMenu {
                     + "\nFecha de Alta: " + mostrar.getFechaAlta()
                     + "\n--------------------------\n");
         } else {
-            System.out.println("No se encontró un socio con ese DNI.");
+            Mensaje.NO_ENCONTRADO.mostrar("Socio");
         }
     }
 
@@ -124,7 +124,7 @@ public class GestorSocio implements GestorMenu {
             System.out.print("Ingrese el nuevo teléfono: ");
             String nuevoTelefono = teclado.nextLine();
             if (nuevoNombre.isBlank() || nuevoTelefono.isBlank()) {
-                System.out.println("Error: Los campos no pueden estar vacíos.");
+                Mensaje.CAMPOS_VACIOS.mostrar();
             } else {
                 aModificar.setNombreCompleto(nuevoNombre);
                 aModificar.setTelefono(nuevoTelefono);
@@ -132,13 +132,11 @@ public class GestorSocio implements GestorMenu {
                 gestor.modificarSocio(aModificar);
             }
         }else{
-            System.out.println("No existe el socio.");
+            Mensaje.NO_ENCONTRADO.mostrar("Socio");
         }
     }
 
     private void pedirYEliminarSocio() {
-        
-        //FALTA CONFIRMACION
         
         System.out.print("Ingrese el ID del socio a eliminar: ");
         
@@ -148,7 +146,7 @@ public class GestorSocio implements GestorMenu {
         if (eliminar != null) {
             gestor.eliminarSocio(eliminar);
         }else{
-            System.out.println("No existe el socio.");
+            Mensaje.NO_ENCONTRADO.mostrar("Socio");
         }
     }
 }

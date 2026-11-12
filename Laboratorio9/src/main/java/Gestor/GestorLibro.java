@@ -3,9 +3,9 @@ package Gestor;
 import Clases.Libro;
 import Controlador.ControladorLibro;
 import herramientas.Mensaje;
-import herramientas.Pausa;
 import java.util.Scanner;
 import herramientas.GestorMenu;
+import herramientas.Pausa;
 import java.time.LocalDate;
 
 public class GestorLibro implements GestorMenu {
@@ -43,16 +43,16 @@ public class GestorLibro implements GestorMenu {
                     case 5 ->
                         pedirYEliminarLibro();
                     case 0 ->
-                        System.out.println("<--\n\n");
+                        Mensaje.SALIR.mostrar();
                     default ->
-                        Mensaje.opcionInvalida();
+                        Mensaje.OPCION_INVALIDA.mostrar();
                 }
             } catch (NumberFormatException e) {
-                Mensaje.tipoDatoIncorrecto();
+                Mensaje.TIPO_DATO_INCORRECTO.mostrar();
             }
 
             if (menu != 0) {
-                Pausa.pausar();
+                Pausa.pausar(teclado);
             }
         } while (menu != 0);
     }
@@ -60,21 +60,16 @@ public class GestorLibro implements GestorMenu {
     public Libro crearLibro(){
         Libro libroCreado = null;
         
-        
         System.out.println("Ingrese ISBN: ");
         String isbn = teclado.nextLine();
-        
         System.out.println("Ingrese titulo: ");
         String titulo = teclado.nextLine();
-
         System.out.println("Ingrese autor: ");
         String autor = teclado.nextLine();
-
         System.out.println("Ingrese editorial: ");
         String editorial = teclado.nextLine();
-
         if (titulo.isBlank() || autor.isBlank() || editorial.isBlank()) {
-            System.out.println("No se admiten datos varíos");
+            Mensaje.CAMPOS_VACIOS.mostrar();
         } else {
            
             System.out.println("Ingrese anio de publicacion: ");
@@ -112,7 +107,7 @@ public class GestorLibro implements GestorMenu {
                     + "\nFecha de Publicacion: " + mostrar.getFechaPublicacion()
                     + "\n--------------------------\n");
         } else {
-            System.out.println("No se encontró un socio con ese DNI.");
+            Mensaje.NO_ENCONTRADO.mostrar("Libro");
         }
     }
      
@@ -131,7 +126,7 @@ public class GestorLibro implements GestorMenu {
             System.out.print("Ingrese la nueva editorial: ");
             String nuevaEditorial = teclado.nextLine();
             if (nuevoTitulo.isBlank() || nuevoAutor.isBlank() || nuevaEditorial.isBlank()) {
-                System.out.println("Error: Los campos no pueden estar vacíos.");
+                Mensaje.CAMPOS_VACIOS.mostrar();
             } else {
                 System.out.print("Ingrese el nuevo anio de publicacion: ");
                 int anioNuevo = Integer.parseInt(teclado.nextLine());
@@ -146,7 +141,7 @@ public class GestorLibro implements GestorMenu {
                 gestor.modificarLibro(aModificar);
             }
         }else{
-            System.out.println("No existe ese libro.");
+            Mensaje.NO_ENCONTRADO.mostrar("Libro");
         }
     }
     
@@ -157,9 +152,19 @@ public class GestorLibro implements GestorMenu {
         Libro eliminar = gestor.buscarLibroPorISBN(isbn);
         
         if (eliminar != null) {
-            gestor.eliminarLibro(eliminar);
+            System.out.println("¿Está seguro de eliminar el libro " + eliminar.getTitulo() + "?\n[No: 0 / Si: 1]");
+            int seleccion = Integer.parseInt(teclado.nextLine());
+
+                switch (seleccion) {
+                    case 0 ->
+                        System.out.println("Libro no eliminado.");
+                    case 1 ->
+                        gestor.eliminarLibro(eliminar);
+                    default ->
+                        Mensaje.OPCION_INVALIDA.mostrar();
+                }
         }else{
-            System.out.println("No existe el libro.");
+            Mensaje.NO_ENCONTRADO.mostrar("Libro");
         }
     }
     

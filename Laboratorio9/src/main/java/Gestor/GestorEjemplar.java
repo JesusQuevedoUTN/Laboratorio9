@@ -4,9 +4,9 @@ import Clases.Ejemplar;
 import Controlador.ControladorEjemplar;
 import herramientas.Estado;
 import herramientas.Mensaje;
-import herramientas.Pausa;
 import java.util.Scanner;
 import herramientas.GestorMenu;
+import herramientas.Pausa;
 
 public class GestorEjemplar implements GestorMenu {
 
@@ -38,17 +38,17 @@ public class GestorEjemplar implements GestorMenu {
                     case 3 ->
                         pedirYModificarEstado();
                     case 0 ->
-                        System.out.println("<--\n\n");
+                        Mensaje.SALIR.mostrar();
                     default ->
-                        Mensaje.opcionInvalida();
+                        Mensaje.OPCION_INVALIDA.mostrar();
                 }
 
             } catch (NumberFormatException e) {
-                Mensaje.tipoDatoIncorrecto();
+                Mensaje.TIPO_DATO_INCORRECTO.mostrar();
             }
 
             if (menu != 0) {
-                Pausa.pausar();
+                Pausa.pausar(teclado);
             }
         } while (menu != 0);
     }
