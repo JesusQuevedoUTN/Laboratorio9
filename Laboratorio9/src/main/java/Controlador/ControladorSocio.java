@@ -49,11 +49,23 @@ public class ControladorSocio {
     }
 
     // 4.3. Buscar socio por DNI
-    public Socio buscarSocio(String dni) {
+    public Socio buscarSocioPorDni(String dni) {
         Socio buscado = null;
 
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
-            buscado = conexion.find(Socio.class, dni);
+            buscado = conexion.createQuery("FROM Socio s WHERE s.dni = :dniBuscado", Socio.class).setParameter("dniBuscado", dni).uniqueResult();
+        } catch (Exception e) {
+            System.out.println("Error al buscar socio: " + e.getMessage());
+        }
+
+        return buscado;
+    }
+
+    public Socio buscarSocioPorId(Integer id) {
+        Socio buscado = null;
+
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            buscado = conexion.find(Socio.class, id);
         } catch (Exception e) {
             System.out.println("Error al buscar socio: " + e.getMessage());
         }
@@ -67,7 +79,7 @@ public class ControladorSocio {
             conexion.beginTransaction();
 
             // SELECT libro
-            Socio modificar = conexion.find(Socio.class, socioModificado.getDni());
+            Socio modificar = conexion.find(Socio.class, socioModificado.getIdSocio());
 
             if (modificar != null) {
 
@@ -90,70 +102,38 @@ public class ControladorSocio {
         }
     }
 
-    //FALTA VERIFICAR QUE NO TENGA PRESTAMOS
-    
     // 4.5. Eliminar socio (Validando préstamos)
     public void eliminarSocio(Socio eliminar) {
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
             conexion.beginTransaction();
+            boolean sePuedeEliminar = true;
 
-            Socio socio = conexion.find(Socio.class, eliminar.getIdSocio());
+            // 1. Verificamos si tiene préstamos usando HQL para contar[cite: 3]
+            Long totalPrestamos = conexion.createQuery("SELECT COUNT(p) FROM Prestamo p WHERE p.idSocio = :id", Long.class)
+                    .setParameter("id", eliminar.getIdSocio())
+                    .uniqueResult();
 
-            if (socio != null) {
-                //DELETE
-                conexion.remove(socio);
-                conexion.getTransaction().commit();
-                System.out.println("Socio eliminado correctamente");
-            } else {
-                System.out.println("No existe un socio con ese ID.");
+            if (totalPrestamos != null && totalPrestamos > 0) {
+                System.out.println("Error: No se puede eliminar el socio porque tiene préstamos asociados.");
+                conexion.getTransaction().rollback(); // Cancelamos la transacción
+                sePuedeEliminar = false;
+            }
+
+            if (sePuedeEliminar) {
+                Socio socio = conexion.find(Socio.class, eliminar.getIdSocio());
+
+                if (socio != null) {
+                    //DELETE
+                    conexion.remove(socio);
+                    conexion.getTransaction().commit();
+                    System.out.println("Socio eliminado correctamente");
+                } else {
+                    System.out.println("No existe un socio con ese ID.");
+                }
+
             }
         } catch (Exception e) {
             System.out.println("Error al eliminar socio: " + e.getMessage());
         }
-
-        /*
-        // Validación obligatoria: verificar si tiene préstamos activos
-        String sqlPrestamos
-                = "SELECT COUNT(*) AS total FROM PRESTAMO \n"
-                + "WHERE id_socio = ?";
-
-        String sqlSocioABorrar
-                = "DELETE FROM SOCIO \n"
-                + "WHERE id_socio = ?";
-
-        //Conexion
-        try (Connection con = Conexion.getConexion()) {
-
-            boolean sePuedeEliminar = true;
-
-            // Consultamos la tabla de prestamos completa
-            try (PreparedStatement instruccionPrestamos = con.prepareStatement(sqlPrestamos)) {
-                instruccionPrestamos.setInt(1, idSocio);
-
-                // Verificamos si tiene préstamos                
-                try (ResultSet consulta = instruccionPrestamos.executeQuery()) {
-                    if (consulta.next() && consulta.getInt("total") > 0) {
-                        System.out.println("Error: No se puede eliminar el socio porque tiene préstamos asociados.");
-                        sePuedeEliminar = false;
-                    }
-                }
-            }
-
-            if (sePuedeEliminar) {
-                try (PreparedStatement instruccionesSocioABorrar = con.prepareStatement(sqlSocioABorrar)) {
-                    instruccionesSocioABorrar.setInt(1, idSocio);
-                    int filas = instruccionesSocioABorrar.executeUpdate();
-
-                    if (filas > 0) {
-                        System.out.println("¡Socio eliminado exitosamente!");
-                    } else {
-                        System.out.println("No se encontró un socio con el DNI: " + idSocio);
-                    }
-                }
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error al eliminar socio: " + e.getMessage());
-        }*/
     }
 }

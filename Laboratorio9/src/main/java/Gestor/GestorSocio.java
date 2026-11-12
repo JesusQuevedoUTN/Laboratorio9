@@ -99,7 +99,7 @@ public class GestorSocio implements GestorMenu {
         System.out.print("Ingrese el DNI a buscar: ");
         String dni = teclado.nextLine();
 
-        Socio mostrar = gestor.buscarSocio(dni);
+        Socio mostrar = gestor.buscarSocioPorDni(dni);
         if (mostrar != null) {
             System.out.println(
                     "\n--- Socio Encontrado ---"
@@ -117,7 +117,7 @@ public class GestorSocio implements GestorMenu {
         System.out.print("Ingrese el DNI del socio a modificar: ");
         String dniModificar = teclado.nextLine();
 
-        Socio aModificar = gestor.buscarSocio(dniModificar);
+        Socio aModificar = gestor.buscarSocioPorDni(dniModificar);
         if (aModificar != null) {
             System.out.print("Ingrese el nuevo nombre: ");
             String nuevoNombre = teclado.nextLine();
@@ -140,8 +140,8 @@ public class GestorSocio implements GestorMenu {
         
         System.out.print("Ingrese el ID del socio a eliminar: ");
         
-        String dni = teclado.nextLine();
-        Socio eliminar = gestor.buscarSocio(dni);
+        Integer id = Integer.parseInt(teclado.nextLine());
+        Socio eliminar = gestor.buscarSocioPorId(id);
         
         if (eliminar != null) {
             gestor.eliminarSocio(eliminar);
