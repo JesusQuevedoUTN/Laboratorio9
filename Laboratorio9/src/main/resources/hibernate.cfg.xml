@@ -9,7 +9,7 @@
         <property name= "connection.driver_class">          org.mariadb.jdbc.Driver</property>
         <property name= "connection.url">                   jdbc:mariadb://localhost:3306/biblioteca_db</property>
         <property name= "connection.username">              root</property>
-        <property name= "connection.password">              Casa1407SQL</property>
+        <property name= "connection.password">              </property>
         <property name= "connection.pool_size">             3</property>
         <property name= "current_session_context_class">    thread</property>
         <property name= "format_sql">                       true</property>
