@@ -9,6 +9,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 import herramientas.GestorMenu;
 import herramientas.Pausa;
+import java.util.List;
 
 public class GestorSocio implements GestorMenu {
 
@@ -38,7 +39,7 @@ public class GestorSocio implements GestorMenu {
                     case 1 ->
                         pedirYAgregarSocio();
                     case 2 ->
-                        gestor.listarSocios();
+                        listarSocios();
                     case 3 ->
                         pedirYBuscarSocio();
                     case 4 ->
@@ -61,6 +62,75 @@ public class GestorSocio implements GestorMenu {
         } while (menu != 0);
     }
 
+    private void pedirYAgregarSocio() {
+        Socio agregar = crearSocio();
+        if (agregar != null) {
+            gestor.agregarSocio(agregar);
+        }
+    }
+
+    private void listarSocios() {
+        List<Socio> socios = gestor.listarSocios();
+        if (socios == null) {
+            Mensaje.NO_ENCONTRADO.mostrar("Socios");
+        } else {
+            System.out.printf("%-5s %-25s %-15s %-15s %-15s %n", "ID", "NOMBRE", "DNI", "TELÉFONO", "FECHA ALTA");
+            System.out.println("-------------------------------------------------------------------");
+
+            for (Socio consulta : socios) {
+                System.out.println(consulta);
+            }
+            System.out.println("----------------------------------------------------------------------------");
+        }
+
+    }
+
+    private void pedirYBuscarSocio() {
+        System.out.print("Ingrese el DNI a buscar: ");
+        String dni = teclado.nextLine();
+
+        Socio mostrar = gestor.buscarSocio(dni);
+        if (mostrar != null) {
+            System.out.println("\n--------------------------- Socio  Encontrado ------------------------------");
+            System.out.println(mostrar);
+            System.out.println("----------------------------------------------------------------------------\n");
+        } else {
+            Mensaje.NO_ENCONTRADO.mostrar("Socio");
+        }
+    }
+
+    private void pedirYModificarSocio() {
+        System.out.print("Ingrese el DNI del socio a modificar: ");
+        String dniModificar = teclado.nextLine();
+
+        Socio aModificar = gestor.buscarSocio(dniModificar);
+        if (aModificar != null) {
+            System.out.print("Ingrese el nuevo nombre: ");
+            String nuevoNombre = teclado.nextLine();
+            System.out.print("Ingrese el nuevo teléfono: ");
+            String nuevoTelefono = teclado.nextLine();
+            if (camposVacios(nuevoNombre, nuevoTelefono)) {
+                Mensaje.CAMPOS_VACIOS.mostrar();
+            } else {
+                aModificar.setNombreCompleto(nuevoNombre);
+                aModificar.setTelefono(nuevoTelefono);
+
+                gestor.modificarSocio(aModificar);
+            }
+        } else {
+            Mensaje.NO_ENCONTRADO.mostrar("Socio");
+        }
+    }
+
+    private void pedirYEliminarSocio() {
+
+        System.out.print("Ingrese el ID del socio a eliminar: ");
+
+        Integer id = Integer.parseInt(teclado.nextLine());
+        gestor.eliminarSocio(id);
+    }
+
+    //CREAR SOCIO
     private Socio crearSocio() {
         Socio socioCreado = null;
         try {
@@ -73,7 +143,7 @@ public class GestorSocio implements GestorMenu {
             System.out.print("Ingrese teléfono: ");
             String tel = teclado.nextLine();
 
-            if (nombre.isBlank() || dni.isBlank() || tel.isBlank()) {
+            if (camposVacios(nombre, dni) || tel.isBlank()) {
                 Mensaje.CAMPOS_VACIOS.mostrar();
             } else {
                 System.out.print("Ingrese fecha de alta (año-mes-día): ");
@@ -88,65 +158,8 @@ public class GestorSocio implements GestorMenu {
         return socioCreado;
     }
 
-    private void pedirYAgregarSocio() {
-        Socio agregar = crearSocio();
-        if (agregar != null) {
-            gestor.agregarSocio(agregar);
-        }
-    }
-
-    private void pedirYBuscarSocio() {
-        System.out.print("Ingrese el DNI a buscar: ");
-        String dni = teclado.nextLine();
-
-        Socio mostrar = gestor.buscarSocioPorDni(dni);
-        if (mostrar != null) {
-            System.out.println(
-                    "\n--- Socio Encontrado ---"
-                    + "\nID: " + mostrar.getIdSocio()
-                    + "\nDNI: " + mostrar.getDni()
-                    + "\nTelefono: " + mostrar.getTelefono()
-                    + "\nFecha de Alta: " + mostrar.getFechaAlta()
-                    + "\n--------------------------\n");
-        } else {
-            Mensaje.NO_ENCONTRADO.mostrar("Socio");
-        }
-    }
-
-    private void pedirYModificarSocio() {
-        System.out.print("Ingrese el DNI del socio a modificar: ");
-        String dniModificar = teclado.nextLine();
-
-        Socio aModificar = gestor.buscarSocioPorDni(dniModificar);
-        if (aModificar != null) {
-            System.out.print("Ingrese el nuevo nombre: ");
-            String nuevoNombre = teclado.nextLine();
-            System.out.print("Ingrese el nuevo teléfono: ");
-            String nuevoTelefono = teclado.nextLine();
-            if (nuevoNombre.isBlank() || nuevoTelefono.isBlank()) {
-                Mensaje.CAMPOS_VACIOS.mostrar();
-            } else {
-                aModificar.setNombreCompleto(nuevoNombre);
-                aModificar.setTelefono(nuevoTelefono);
-                
-                gestor.modificarSocio(aModificar);
-            }
-        }else{
-            Mensaje.NO_ENCONTRADO.mostrar("Socio");
-        }
-    }
-
-    private void pedirYEliminarSocio() {
-        
-        System.out.print("Ingrese el ID del socio a eliminar: ");
-        
-        Integer id = Integer.parseInt(teclado.nextLine());
-        Socio eliminar = gestor.buscarSocioPorId(id);
-        
-        if (eliminar != null) {
-            gestor.eliminarSocio(eliminar);
-        }else{
-            Mensaje.NO_ENCONTRADO.mostrar("Socio");
-        }
+    //Booleans
+    private static boolean camposVacios(String nuevoNombre, String nuevoTelefono) {
+        return nuevoNombre.isBlank() || nuevoTelefono.isBlank();
     }
 }

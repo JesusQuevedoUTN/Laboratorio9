@@ -8,8 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 
-
-@Entity 
+@Entity
 @Table(name = "PRESTAMO")
 public class Prestamo {
 
@@ -17,22 +16,22 @@ public class Prestamo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_prestamo", length = 11, nullable = false)
     private Integer idPrestamo;
-    
+
     @Column(name = "id_socio", length = 11, nullable = false)
     private Integer idSocio;
-    
+
     @Column(name = "ISBN", length = 20, nullable = false)
     private String isbn;
-    
+
     @Column(name = "nro_ejemplar", length = 11, nullable = false)
     private Integer nroEjemplar;
-    
+
     @Column(name = "fecha_prestamo", nullable = false)
     private LocalDate fechaPrestamo;
-    
+
     @Column(name = "fecha_devolucion_prevista", nullable = false)
     private LocalDate fechaPrevista;
-    
+
     @Column(name = "fecha_devolucion_real", nullable = true)
     private LocalDate fechaReal;
 
@@ -47,7 +46,7 @@ public class Prestamo {
         this.fechaPrevista = fechaPrevista;
         this.fechaReal = fechaReal;
     }
-    
+
     public Prestamo(Integer idSocio, String isbn, Integer nroEjemplar, LocalDate fechaPrestamo, LocalDate fechaPrevista) {
         this.idSocio = idSocio;
         this.isbn = isbn;
@@ -114,7 +113,14 @@ public class Prestamo {
 
     @Override
     public String toString() {
-        return "Prestamo{" + "idPrestamo=" + idPrestamo + ", idSocio=" + idSocio + ", isbn=" + isbn + ", nroEjemplar=" + nroEjemplar + ", fechaPrestamo=" + fechaPrestamo + ", fechaPrevista=" + fechaPrevista + ", fechaReal=" + fechaReal + '}';
+        return String.format("%-8d %-12d %-22s %-12d %-18s %-18s %-18s",
+                idPrestamo,
+                idSocio,
+                isbn,
+                nroEjemplar,
+                fechaPrestamo,
+                fechaPrevista,
+                fechaReal == null ? "Pendiente" : fechaReal);
     }
 
 }

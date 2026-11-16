@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 
-@Entity 
+@Entity
 @Table(name = "SOCIO")
 public class Socio {
 
@@ -16,17 +16,16 @@ public class Socio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_socio", length = 11, nullable = false)
     private Integer idSocio;
-    
-    
+
     @Column(name = "nombre", length = 100, nullable = false)
     private String nombreCompleto;
-    
+
     @Column(name = "DNI", length = 50, nullable = false)
     private String dni;
-    
+
     @Column(name = "telefono", length = 20, nullable = true)
     private String telefono;
-    
+
     @Column(name = "fecha_alta", nullable = false)
     private LocalDate fechaAlta;
 
@@ -82,7 +81,10 @@ public class Socio {
 
     @Override
     public String toString() {
-        return "Socio{" + "idSocio=" + idSocio + ", nombreCompleto=" + nombreCompleto + ", dni=" + dni + ", telefono=" + telefono + ", fechaAlta=" + fechaAlta + '}';
-    }
+        return String.format(
+                "%-5d %-25s %-15s %-15s %-15s",
+                idSocio, nombreCompleto, dni, telefono, fechaAlta
+        );
 
+    }
 }

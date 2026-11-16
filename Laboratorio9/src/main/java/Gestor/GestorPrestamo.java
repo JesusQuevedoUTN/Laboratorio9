@@ -1,6 +1,8 @@
 package Gestor;
 
+import Clases.Libro;
 import Clases.Prestamo;
+import Clases.Socio;
 import Controlador.ControladorPrestamo;
 import herramientas.Mensaje;
 import java.time.LocalDate;
@@ -9,6 +11,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 import herramientas.GestorMenu;
 import herramientas.Pausa;
+import java.util.List;
 
 public class GestorPrestamo implements GestorMenu {
 
@@ -39,7 +42,7 @@ public class GestorPrestamo implements GestorMenu {
                     case 2 ->
                         pedirYRegistrarDevolucion();
                     case 3 ->
-                        gestor.listarPrestamos();
+                        listarPrestamos();
                     case 0 ->
                         Mensaje.SALIR.mostrar();
                     default ->
@@ -103,5 +106,24 @@ public class GestorPrestamo implements GestorMenu {
         } catch (DateTimeParseException e) {
             Mensaje.FECHA_INVALIDA.mostrar();
         }
+    }
+
+    private void listarPrestamos() {
+        List<Prestamo> prestamos = gestor.listarPrestamos();
+
+        if (prestamos != null) {
+            System.out.printf("%-8s %-12s %-22s %-12s %-18s %-18s %-18s%n",
+                    "ID", "ID SOCIO", "ISBN", "EJEMPLAR",
+                    "FECHA PRESTAMO", "FECHA PREVISTA", "FECHA REAL");
+
+            System.out.println("--------------------------------------------------------------------------------------------------------------");
+
+            for (Prestamo consulta : prestamos) {
+                System.out.println(consulta);
+            }
+        } else {
+            Mensaje.NO_ENCONTRADO.mostrar("Prestamos");
+        }
+
     }
 }

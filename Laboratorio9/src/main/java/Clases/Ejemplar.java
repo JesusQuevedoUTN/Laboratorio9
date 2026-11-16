@@ -61,7 +61,9 @@ public class Ejemplar {
 
     @Override
     public String toString() {
-        return "Ejemplar{" + "isbn=" + isbn + ", nroEjemplar=" + nroEjemplar + ", estado=" + estado + '}';
+        return String.format(
+                "%-15s %-15d %-15s",
+                isbn, nroEjemplar, estado.name()
+        );
     }
-
 }

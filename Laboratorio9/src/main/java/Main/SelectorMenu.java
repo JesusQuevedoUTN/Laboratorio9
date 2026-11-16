@@ -54,7 +54,8 @@ public class SelectorMenu {
                         seleccion = menuPrestamo;
                     case 0 -> {
                         seleccion = null;
-                        System.out.println("\n\nAdios\n\n");}
+                        System.out.println("\n\nAdios\n\n");
+                    }
                     default ->
                         Mensaje.OPCION_INVALIDA.mostrar();
                 }

@@ -78,7 +78,9 @@ public class Libro {
 
     @Override
     public String toString() {
-        return "Libro{" + "isbn=" + isbn + ", titulo=" + titulo + ", autor=" + autor + ", editorial=" + editorial + ", fechaPublicacion=" + fechaPublicacion + '}';
+        return String.format(
+                "%-15s %-40s %-30s %-20s %-15d",
+                isbn, titulo, autor, editorial, fechaPublicacion
+        );
     }
-
 }

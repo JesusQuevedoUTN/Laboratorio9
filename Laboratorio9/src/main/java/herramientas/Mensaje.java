@@ -17,7 +17,7 @@ public enum Mensaje {
     public void mostrar() {
         System.out.println(this.texto);
     }
-    
+
     public void mostrar(String entidad) {
         System.out.printf(this.texto, entidad);
     }

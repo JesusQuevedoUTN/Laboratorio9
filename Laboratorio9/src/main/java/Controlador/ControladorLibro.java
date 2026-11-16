@@ -2,6 +2,7 @@ package Controlador;
 
 import Clases.Libro;
 import herramientas.HibernateUtil;
+import herramientas.Mensaje;
 import java.util.List;
 import org.hibernate.Session;
 
@@ -11,7 +12,7 @@ public class ControladorLibro {
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
             conexion.beginTransaction();
 
-            // INSERT 
+            // INSERT VALUES
             conexion.persist(nuevoLibro);
             conexion.getTransaction().commit();
 
@@ -22,34 +23,22 @@ public class ControladorLibro {
         }
     }
 
-    public void listarLibros() {
+    public List<Libro> listarLibros() {
+        List<Libro> libros = null;
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
-            List<Libro> libros = conexion.createQuery("FROM Libro", Libro.class).getResultList();
-            System.out.printf("%-15s %-40s %-30s %-20s %-15s%n", "ISBN", "Titulo", "Autor", "Editorial", "Fecha Publicacion");
-            System.out.println("------------------------------------------------------------------------------------------------------------------");
-
-            for (Libro consulta : libros) {
-                String ISBN = consulta.getIsbn();
-                String titulo = consulta.getTitulo();
-                String autor = consulta.getAutor();
-                String editorial = consulta.getEditorial();
-                int fecha_publicacion = consulta.getFechaPublicacion();
-
-                System.out.printf(
-                        "%-15s %-40s %-30s %-20s %-15d\n",
-                        ISBN, titulo, autor, editorial, fecha_publicacion);
-            }
-            System.out.println();
-
+            //SELECT *
+            libros = conexion.createQuery("FROM Libro", Libro.class).getResultList();
         } catch (Exception e) {
-            System.out.println("Error al listar libros: " + e.getMessage());
+            System.out.println("Error al obtener libros: " + e.getMessage());
         }
+        return libros;
     }
 
-    public Libro buscarLibroPorISBN(String isbn) {
+    public static Libro buscarLibroPorISBN(String isbn) {
         Libro buscado = null;
 
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            //SELECT POR ID
             buscado = conexion.find(Libro.class, isbn);
         } catch (Exception e) {
             System.out.println("Error al buscar socio: " + e.getMessage());
@@ -68,19 +57,17 @@ public class ControladorLibro {
             if (modificar != null) {
 
                 // Modificamos el libro original
-                modificar.setIsbn(libroModificado.getIsbn());
                 modificar.setTitulo(libroModificado.getTitulo());
                 modificar.setEditorial(libroModificado.getEditorial());
                 modificar.setAutor(libroModificado.getAutor());
                 modificar.setFechaPublicacion(libroModificado.getFechaPublicacion());
 
                 // UPDATE
-                conexion.merge(modificar);
                 conexion.getTransaction().commit();
 
                 System.out.println("Libro modificado correctamente");
             } else {
-                System.out.println("No existe un libro con ese ISBN.");
+                Mensaje.NO_ENCONTRADO.mostrar("ISBN");
             }
         } catch (Exception e) {
             System.out.println("Error al modificar libro: " + e.getMessage());
@@ -99,7 +86,7 @@ public class ControladorLibro {
                 conexion.getTransaction().commit();
                 System.out.println("Libro eliminado correctamente");
             } else {
-                System.out.println("No existe un libro con ese ISBN.");
+                Mensaje.NO_ENCONTRADO.mostrar("ISBN");
             }
         } catch (Exception e) {
             System.out.println("Error al eliminar Libro: " + e.getMessage());

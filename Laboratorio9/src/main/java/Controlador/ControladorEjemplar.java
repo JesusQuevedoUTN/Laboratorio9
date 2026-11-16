@@ -1,8 +1,8 @@
 package Controlador;
 
 import Clases.Ejemplar;
-import herramientas.Estado;
 import herramientas.HibernateUtil;
+import herramientas.Mensaje;
 import java.util.List;
 import org.hibernate.Session;
 
@@ -38,25 +38,16 @@ public class ControladorEjemplar {
         }
     }
 
-    public void listarEjemplares(String isbnBuscado) {
+    public List listarEjemplares(String isbnBuscado) {
+        List<Ejemplar> ejemplares = null;
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
-            List<Ejemplar> ejemplares = conexion.createQuery("FROM Ejemplar e WHERE e.isbn = :isbn", Ejemplar.class)
+            ejemplares = conexion.createQuery("FROM Ejemplar e WHERE e.isbn = :isbn", Ejemplar.class)
                     .setParameter("isbn", isbnBuscado)
                     .getResultList();
-
-            System.out.printf("%-15s %-15s %-15s%n", "ISBN", "Numero", "Estado");
-            System.out.println("---------------------------------------------------------");
-
-            for (Ejemplar consulta : ejemplares) {
-                System.out.printf(
-                        "%-15s %-15d %-15s\n",
-                        consulta.getIsbn(), consulta.getNroEjemplar(), consulta.getEstado().name());
-            }
-            System.out.println();
-
         } catch (Exception e) {
             System.out.println("Error al listar ejemplares: " + e.getMessage());
         }
+        return ejemplares;
     }
 
     public void modificarEstado(Ejemplar ejemplarModificado) {
@@ -64,23 +55,32 @@ public class ControladorEjemplar {
             conexion.beginTransaction();
 
             // Buscar ejemplar
-            Ejemplar modificar = conexion.createQuery("FROM Ejemplar e WHERE e.isbn = :isbn AND e.nroEjemplar = :nro", Ejemplar.class)
-                    .setParameter("isbn", ejemplarModificado.getIsbn())
-                    .setParameter("nro", ejemplarModificado.getNroEjemplar())
-                    .uniqueResult();
+            Ejemplar modificar = buscarEjemplar(ejemplarModificado.getIsbn(), ejemplarModificado.getNroEjemplar());
 
             if (modificar != null) {
                 // UPDATE
                 modificar.setEstado(ejemplarModificado.getEstado());
-                conexion.merge(modificar);
                 conexion.getTransaction().commit();
 
                 System.out.println("Ejemplar modificado correctamente");
             } else {
-                System.out.println("No existe un ejemplar con ese ISBN y Número.");
+                Mensaje.NO_ENCONTRADO.mostrar("Ejemplar");
             }
         } catch (Exception e) {
             System.out.println("Error al modificar ejemplar: " + e.getMessage());
         }
+    }
+
+    public static Ejemplar buscarEjemplar(String isbn, Integer nro) {
+        Ejemplar buscado = null;
+        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
+            buscado = conexion.createQuery("FROM Ejemplar e WHERE e.isbn = :isbn AND e.nroEjemplar = :nro", Ejemplar.class)
+                    .setParameter("isbn", isbn)
+                    .setParameter("nro", nro)
+                    .uniqueResult();
+        } catch (Exception e) {
+            System.out.println("Error al modificar ejemplar: " + e.getMessage());
+        }
+        return buscado;
     }
 }
