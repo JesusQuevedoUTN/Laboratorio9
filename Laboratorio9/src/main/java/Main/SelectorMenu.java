@@ -17,10 +17,10 @@ public class SelectorMenu {
     public void seleccionar() {
 
         //Controladores creados para no tener que hacer New en cada vuelta que da el do while
-        GestorLibro menuLibro = new GestorLibro();
-        GestorSocio menuSocio = new GestorSocio();
-        GestorEjemplar menuEjemplar = new GestorEjemplar();
-        GestorPrestamo menuPrestamo = new GestorPrestamo();
+        GestorLibro menuLibro = new GestorLibro(teclado);
+        GestorSocio menuSocio = new GestorSocio(teclado);
+        GestorEjemplar menuEjemplar = new GestorEjemplar(teclado);
+        GestorPrestamo menuPrestamo = new GestorPrestamo(teclado);
 
         // Forzar la consola a UTF-8 para que los acentos salgan bien en consola, recomendado por Gemini
         System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
