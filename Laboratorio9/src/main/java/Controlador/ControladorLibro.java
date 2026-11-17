@@ -1,6 +1,8 @@
 package Controlador;
 
+import Clases.Ejemplar;
 import Clases.Libro;
+import herramientas.Estado;
 import herramientas.HibernateUtil;
 import herramientas.Mensaje;
 import java.util.List;
@@ -73,20 +75,32 @@ public class ControladorLibro {
             System.out.println("Error al modificar libro: " + e.getMessage());
         }
     }
-    
+
     public void eliminarLibro(Libro eliminar) {
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
             conexion.beginTransaction();
 
             Libro libro = conexion.find(Libro.class, eliminar.getIsbn());
 
-            if (libro != null) {
-                //DELETE
-                conexion.remove(libro);
-                conexion.getTransaction().commit();
-                System.out.println("Libro eliminado correctamente");
-            } else {
+            if (libro == null) {
                 Mensaje.NO_ENCONTRADO.mostrar("ISBN");
+            } else {
+                //Consultar tabla prestamos
+                List<Ejemplar> ejemplares = conexion.createQuery(
+                        "FROM Ejemplar e WHERE e.isbn = :isbn AND e.estado = :estado", Ejemplar.class)
+                        .setParameter("isbn", libro.getIsbn())
+                        .setParameter("estado", Estado.Prestado)
+                        .list();
+
+                if (!ejemplares.isEmpty()) {
+                    System.out.println("Error: No se puede eliminar el libro porque tiene al menos un ejemplar prestado.");
+                } else {
+                    //DELETE
+                    conexion.remove(libro);
+                    conexion.getTransaction().commit();
+                    System.out.println("Libro eliminado correctamente");
+
+                }
             }
         } catch (Exception e) {
             System.out.println("Error al eliminar Libro: " + e.getMessage());
