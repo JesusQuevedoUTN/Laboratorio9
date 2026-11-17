@@ -18,7 +18,7 @@ public class ControladorPrestamo {
             conexion.beginTransaction();
 
             // Buscar Socio 
-            Socio socio = conexion.get(Socio.class, nuevoPrestamo.getIdSocio());
+            Socio socio = conexion.find(Socio.class, nuevoPrestamo.getIdSocio());
             if (socio == null) {
                 Mensaje.NO_ENCONTRADO.mostrar("Socio");
             } else {
@@ -57,7 +57,7 @@ public class ControladorPrestamo {
             conexion.beginTransaction();
 
             // Buscar el préstamo
-            Prestamo prestamo = conexion.get(Prestamo.class, idPrestamo);
+            Prestamo prestamo = conexion.find(Prestamo.class, idPrestamo);
 
             if (prestamo == null) {
                 Mensaje.NO_ENCONTRADO.mostrar("Prestamo");

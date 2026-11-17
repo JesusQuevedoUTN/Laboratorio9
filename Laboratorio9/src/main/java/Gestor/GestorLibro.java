@@ -66,7 +66,7 @@ public class GestorLibro implements GestorMenu {
     private void pedirYAgregarLibro() {
         Libro agregar = crearLibro();
         if (agregar != null) {
-            gestor.cargarLibro(agregar);
+            gestor.agregarLibro(agregar);
         }
     }
 

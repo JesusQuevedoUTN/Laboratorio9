@@ -8,7 +8,7 @@ import org.hibernate.Session;
 
 public class ControladorLibro {
 
-    public void cargarLibro(Libro nuevoLibro) {
+    public void agregarLibro(Libro nuevoLibro) {
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
             conexion.beginTransaction();
 
@@ -73,7 +73,7 @@ public class ControladorLibro {
             System.out.println("Error al modificar libro: " + e.getMessage());
         }
     }
-
+    
     public void eliminarLibro(Libro eliminar) {
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
             conexion.beginTransaction();

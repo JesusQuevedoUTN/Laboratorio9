@@ -23,21 +23,6 @@ public class ControladorEjemplar {
         }
     }
 
-    public void cargarEjemplar(Ejemplar nuevoEjemplar) {
-        try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
-            conexion.beginTransaction();
-
-            // INSERT 
-            conexion.persist(nuevoEjemplar);
-            conexion.getTransaction().commit();
-
-            System.out.println("Ejemplar agregado correctamente");
-
-        } catch (Exception e) {
-            System.out.println("Error al agregar el ejemplar: " + e.getMessage());
-        }
-    }
-
     public List listarEjemplares(String isbnBuscado) {
         List<Ejemplar> ejemplares = null;
         try (Session conexion = HibernateUtil.getSessionFactory().openSession()) {
@@ -55,7 +40,10 @@ public class ControladorEjemplar {
             conexion.beginTransaction();
 
             // Buscar ejemplar
-            Ejemplar modificar = buscarEjemplar(ejemplarModificado.getIsbn(), ejemplarModificado.getNroEjemplar());
+            Ejemplar modificar = conexion.createQuery("FROM Ejemplar e WHERE e.isbn = :isbn AND e.nroEjemplar = :nro", Ejemplar.class)
+                    .setParameter("isbn", ejemplarModificado.getIsbn())
+                    .setParameter("nro", ejemplarModificado.getNroEjemplar())
+                    .uniqueResult();
 
             if (modificar != null) {
                 // UPDATE
