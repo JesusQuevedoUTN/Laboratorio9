@@ -1,9 +1,6 @@
 package Clases;
 
 import java.io.Serializable;
-import java.util.Objects;
-
-// Vibecodeado aún
 public class EjemplarId implements Serializable {
 
     private String isbn;
@@ -17,20 +14,19 @@ public class EjemplarId implements Serializable {
         this.nroEjemplar = nroEjemplar;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        EjemplarId that = (EjemplarId) o;
-        return Objects.equals(isbn, that.isbn) && Objects.equals(nroEjemplar, that.nroEjemplar);
+    public String getIsbn() {
+        return isbn;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(isbn, nroEjemplar);
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public Integer getNroEjemplar() {
+        return nroEjemplar;
+    }
+
+    public void setNroEjemplar(Integer nroEjemplar) {
+        this.nroEjemplar = nroEjemplar;
     }
 }
