@@ -14,9 +14,13 @@ import java.util.List;
 public class GestorSocio implements GestorMenu {
 
     private ControladorSocio gestor = new ControladorSocio();
-    private Scanner teclado = new Scanner(System.in);
+    private Scanner teclado;
     private DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-M-d");
 
+    public GestorSocio(Scanner teclado) {
+        this.teclado = teclado;
+    }
+    
     @Override
     public void ejecutarMenu() {
         int menu = -1;
@@ -91,9 +95,8 @@ public class GestorSocio implements GestorMenu {
 
         Socio mostrar = gestor.buscarSocio(dni);
         if (mostrar != null) {
-            System.out.println("\n--------------------------- Socio  Encontrado ------------------------------");
+            System.out.printf("%-5s %-25s %-15s %-15s %-15s %n", "ID", "NOMBRE", "DNI", "TELÉFONO", "FECHA ALTA");
             System.out.println(mostrar);
-            System.out.println("----------------------------------------------------------------------------\n");
         } else {
             Mensaje.NO_ENCONTRADO.mostrar("Socio");
         }

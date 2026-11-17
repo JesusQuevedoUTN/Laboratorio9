@@ -12,7 +12,11 @@ import java.util.List;
 public class GestorLibro implements GestorMenu {
 
     private ControladorLibro gestor = new ControladorLibro();
-    private Scanner teclado = new Scanner(System.in);
+    private Scanner teclado;
+
+    public GestorLibro(Scanner teclado) {
+        this.teclado = teclado;
+    }
 
     @Override
     public void ejecutarMenu() {
@@ -87,9 +91,8 @@ public class GestorLibro implements GestorMenu {
 
         Libro mostrar = gestor.buscarLibroPorISBN(isbn);
         if (mostrar != null) {
-            System.out.println("\n------ Libro  Encontrado ------");
+            System.out.printf("%-15s %-40s %-30s %-20s %-15s%n", "ISBN", "Titulo", "Autor", "Editorial", "Fecha Publicacion");
             System.out.println(mostrar);
-            System.out.println("--------------------------------\n");
         } else {
             Mensaje.NO_ENCONTRADO.mostrar("Libro");
         }

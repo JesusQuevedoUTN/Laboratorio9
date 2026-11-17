@@ -1,8 +1,6 @@
 package Gestor;
 
-import Clases.Libro;
 import Clases.Prestamo;
-import Clases.Socio;
 import Controlador.ControladorPrestamo;
 import herramientas.Mensaje;
 import java.time.LocalDate;
@@ -15,10 +13,14 @@ import java.util.List;
 
 public class GestorPrestamo implements GestorMenu {
 
+    private Scanner teclado;
     private ControladorPrestamo gestor = new ControladorPrestamo();
-    private Scanner teclado = new Scanner(System.in);
     private DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-M-d");
 
+    public GestorPrestamo(Scanner teclado) {
+        this.teclado = teclado;
+    }
+    
     @Override
     public void ejecutarMenu() {
         int menu = -1;

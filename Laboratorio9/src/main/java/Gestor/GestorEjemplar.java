@@ -12,8 +12,12 @@ import java.util.List;
 public class GestorEjemplar implements GestorMenu {
 
     private ControladorEjemplar gestor = new ControladorEjemplar();
-    private Scanner teclado = new Scanner(System.in);
+    private Scanner teclado;
 
+    public GestorEjemplar(Scanner teclado) {
+        this.teclado = teclado;
+    }
+    
     @Override
     public void ejecutarMenu() {
         int menu = -1;
