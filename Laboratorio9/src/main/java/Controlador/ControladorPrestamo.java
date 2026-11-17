@@ -30,7 +30,10 @@ public class ControladorPrestamo {
                 } else {
 
                     // Buscar Ejemplar 
-                    Ejemplar ejemplar = ControladorEjemplar.buscarEjemplar(nuevoPrestamo.getIsbn(), nuevoPrestamo.getNroEjemplar());
+                    Ejemplar ejemplar = conexion.createQuery("FROM Ejemplar e WHERE e.isbn = :isbn AND e.nroEjemplar = :nro", Ejemplar.class)
+                    .setParameter("isbn", nuevoPrestamo.getIsbn())
+                    .setParameter("nro", nuevoPrestamo.getNroEjemplar())
+                    .uniqueResult();
                     if (ejemplar == null) {
                         Mensaje.NO_ENCONTRADO.mostrar("Ejemplar");
                     } else {
@@ -68,7 +71,10 @@ public class ControladorPrestamo {
                 prestamo.setFechaReal(fechaDev);
 
                 // Buscamos el ejemplar
-                Ejemplar ejemplar = ControladorEjemplar.buscarEjemplar(prestamo.getIsbn(), prestamo.getNroEjemplar());
+                Ejemplar ejemplar = conexion.createQuery("FROM Ejemplar e WHERE e.isbn = :isbn AND e.nroEjemplar = :nro", Ejemplar.class)
+                    .setParameter("isbn", prestamo.getIsbn())
+                    .setParameter("nro", prestamo.getNroEjemplar())
+                    .uniqueResult();
 
                 if (ejemplar == null) {
                     Mensaje.NO_ENCONTRADO.mostrar("Ejemplar");

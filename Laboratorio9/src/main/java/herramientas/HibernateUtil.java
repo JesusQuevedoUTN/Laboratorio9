@@ -1,7 +1,6 @@
 package herramientas;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.Session;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
@@ -11,7 +10,6 @@ import org.hibernate.HibernateException;
 public class HibernateUtil {
 
     private static final SessionFactory sessionFactory;
-    private static Session session;
 
     static {
         try {
@@ -23,7 +21,6 @@ public class HibernateUtil {
                     .build();
             sessionFactory = metadata.getSessionFactoryBuilder().build();
 
-            session = sessionFactory.openSession();
         } catch (HibernateException ex) {
             System.err.println("Error al crear la conf de hibernate: "
                     + ex.getMessage());
